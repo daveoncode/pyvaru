@@ -4,6 +4,7 @@ from pyvaru import ValidationRule
 
 
 class TypeRule(ValidationRule):
+    #: Default error message for the rule (class attribute).
     default_error_message = 'Object is not an instance of the expected type.'
 
     def __init__(self,
@@ -20,6 +21,7 @@ class TypeRule(ValidationRule):
 
 
 class FullStringRule(ValidationRule):
+    #: Default error message for the rule (class attribute).
     default_error_message = 'Invalid or empty string.'
 
     def apply(self):
@@ -28,6 +30,7 @@ class FullStringRule(ValidationRule):
 
 
 class ChoiceRule(ValidationRule):
+    #: Default error message for the rule (class attribute).
     default_error_message = 'Value not found in available choices.'
 
     def __init__(self,
@@ -44,6 +47,7 @@ class ChoiceRule(ValidationRule):
 
 
 class MinValueRule(ValidationRule):
+    #: Default error message for the rule (class attribute).
     default_error_message = 'Value is smaller than expected one.'
 
     def __init__(self,
@@ -60,6 +64,7 @@ class MinValueRule(ValidationRule):
 
 
 class MaxValueRule(ValidationRule):
+    #: Default error message for the rule (class attribute).
     default_error_message = 'Value is greater than expected one.'
 
     def __init__(self,
@@ -76,6 +81,7 @@ class MaxValueRule(ValidationRule):
 
 
 class MinLengthRule(ValidationRule):
+    #: Default error message for the rule (class attribute).
     default_error_message = 'Length is smaller than expected one.'
 
     def __init__(self,
@@ -93,6 +99,7 @@ class MinLengthRule(ValidationRule):
 
 
 class MaxLengthRule(ValidationRule):
+    #: Default error message for the rule (class attribute).
     default_error_message = 'Length is greater than expected one.'
 
     def __init__(self,
@@ -110,6 +117,7 @@ class MaxLengthRule(ValidationRule):
 
 
 class RangeRule(ValidationRule):
+    #: Default error message for the rule (class attribute).
     default_error_message = 'Value is out of range.'
 
     def __init__(self,
@@ -125,7 +133,26 @@ class RangeRule(ValidationRule):
         return self.apply_to in self.valid_range
 
 
-class RegexRule(ValidationRule):
+class IntervalRule(ValidationRule):
+    default_error_message = 'Value is not in interval.'
+
+    def __init__(self,
+                 apply_to: object,
+                 interval_from: float,
+                 interval_to: float,
+                 label: str,
+                 error_message: str = None,
+                 stop_if_invalid: bool = False):
+        super().__init__(apply_to, label, error_message, stop_if_invalid)
+        self.interval_from = interval_from
+        self.interval_to = interval_to
+
+    def apply(self) -> bool:
+        return self.interval_from <= self.apply_to <= self.interval_to
+
+
+class PatternRule(ValidationRule):
+    #: Default error message for the rule (class attribute).
     default_error_message = 'Value does not match expected pattern.'
 
     def __init__(self,

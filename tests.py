@@ -1,9 +1,11 @@
 import re
 import unittest
 
-from pyvaru import ValidationRule, Validator, ValidationResult
+from pyvaru import ValidationRule, Validator, ValidationResult, ValidationException
 from pyvaru.rules import TypeRule, FullStringRule, ChoiceRule, MinValueRule, MaxValueRule, MinLengthRule, \
-    MaxLengthRule, RangeRule, RegexRule
+    MaxLengthRule, RangeRule, PatternRule, IntervalRule
+
+CUSTOM_MESSAGE = 'custom message'
 
 
 class ValidationRuleTest(unittest.TestCase):
@@ -87,6 +89,65 @@ class ValidatorTest(unittest.TestCase):
         self.assertEqual(result.errors.get('Field B'), [ValidationRule.default_error_message])
         self.assertEqual(result.errors.get('Field C'), [ContainsRule.default_error_message])
 
+    def test_validator_as_context_processor_with_failures(self):
+        class GtRule(ValidationRule):
+            def apply(self) -> bool:
+                return self.apply_to > 200
+
+        class LtRule(ValidationRule):
+            def apply(self) -> bool:
+                return self.apply_to < 0
+
+        class ContainsRule(ValidationRule):
+            default_error_message = 'banana not found'
+
+            def apply(self) -> bool:
+                return 'banana' in self.apply_to
+
+        class MyValidator(Validator):
+            def get_rules(self) -> list:
+                data = self.data  # type: dict
+                return [
+                    GtRule(data['a'], 'Field A', 'GtRule not respected!'),
+                    LtRule(data['b'], 'Field B'),
+                    ContainsRule(data['c'], 'Field C'),
+                ]
+
+        with self.assertRaises(ValidationException) as raise_context:
+            with MyValidator({'a': 20, 'b': 1, 'c': 'hello world'}):
+                print("this won't print")
+
+        errors = raise_context.exception.errors
+        self.assertIsInstance(errors, dict)
+        self.assertEqual(errors.get('Field A'), ['GtRule not respected!'])
+        self.assertEqual(errors.get('Field B'), [ValidationRule.default_error_message])
+        self.assertEqual(errors.get('Field C'), [ContainsRule.default_error_message])
+
+    def test_validator_as_context_processor_without_failures(self):
+        class GtRule(ValidationRule):
+            def apply(self) -> bool:
+                return self.apply_to > 5
+
+        class LtRule(ValidationRule):
+            def apply(self) -> bool:
+                return self.apply_to < 10
+
+        class ContainsRule(ValidationRule):
+            def apply(self) -> bool:
+                return 'hello' in self.apply_to
+
+        class MyValidator(Validator):
+            def get_rules(self) -> list:
+                data = self.data  # type: dict
+                return [
+                    GtRule(data['a'], 'Field A'),
+                    LtRule(data['b'], 'Field B'),
+                    ContainsRule(data['c'], 'Field C'),
+                ]
+
+        with MyValidator({'a': 20, 'b': 1, 'c': 'hello world'}) as validator:
+            self.assertIsInstance(validator, MyValidator)
+
     def test_multiple_rules_applied_to_the_same_field(self):
         class GtRule(ValidationRule):
             def apply(self) -> bool:
@@ -163,9 +224,8 @@ class TypeRuleTest(unittest.TestCase):
         self.assertEqual(rule.get_error_message(), TypeRule.default_error_message)
 
     def test_custom_message_used_if_provided(self):
-        custom_msg = 'Not a dictionary.'
-        rule = TypeRule({}, 'my_object', dict, custom_msg)
-        self.assertEqual(rule.get_error_message(), custom_msg)
+        rule = TypeRule({}, 'my_object', dict, CUSTOM_MESSAGE)
+        self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
 
 
 class FullStringRuleTest(unittest.TestCase):
@@ -182,9 +242,8 @@ class FullStringRuleTest(unittest.TestCase):
         self.assertEqual(rule.get_error_message(), FullStringRule.default_error_message)
 
     def test_custom_message_used_if_provided(self):
-        msg = 'not a valid string'
-        rule = FullStringRule('ciao', 'label', msg)
-        self.assertEqual(rule.get_error_message(), msg)
+        rule = FullStringRule('ciao', 'label', CUSTOM_MESSAGE)
+        self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
 
 
 class ChoiceRuleTest(unittest.TestCase):
@@ -199,9 +258,8 @@ class ChoiceRuleTest(unittest.TestCase):
         self.assertEqual(rule.get_error_message(), ChoiceRule.default_error_message)
 
     def test_custom_message_used_if_provided(self):
-        msg = 'custom message'
-        rule = ChoiceRule('B', 'label', choices=('A', 'B', 'C'), error_message=msg)
-        self.assertEqual(rule.get_error_message(), msg)
+        rule = ChoiceRule('B', 'label', choices=('A', 'B', 'C'), error_message=CUSTOM_MESSAGE)
+        self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
 
 
 class MinValueRuleTest(unittest.TestCase):
@@ -216,9 +274,8 @@ class MinValueRuleTest(unittest.TestCase):
         self.assertEqual(rule.get_error_message(), MinValueRule.default_error_message)
 
     def test_custom_message_used_if_provided(self):
-        msg = 'custom message'
-        rule = MinValueRule(100, 'label', min_value=50, error_message=msg)
-        self.assertEqual(rule.get_error_message(), msg)
+        rule = MinValueRule(100, 'label', min_value=50, error_message=CUSTOM_MESSAGE)
+        self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
 
 
 class MaxValueRuleTest(unittest.TestCase):
@@ -233,9 +290,8 @@ class MaxValueRuleTest(unittest.TestCase):
         self.assertEqual(rule.get_error_message(), MaxValueRule.default_error_message)
 
     def test_custom_message_used_if_provided(self):
-        msg = 'custom message'
-        rule = MaxValueRule(10, 'label', max_value=50, error_message=msg)
-        self.assertEqual(rule.get_error_message(), msg)
+        rule = MaxValueRule(10, 'label', max_value=50, error_message=CUSTOM_MESSAGE)
+        self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
 
 
 class MinLengthRuleTest(unittest.TestCase):
@@ -258,9 +314,8 @@ class MinLengthRuleTest(unittest.TestCase):
         self.assertEqual(rule.get_error_message(), MinLengthRule.default_error_message)
 
     def test_custom_message_used_if_provided(self):
-        msg = 'custom message'
-        rule = MinLengthRule('hello', 'label', min_length=10, error_message=msg)
-        self.assertEqual(rule.get_error_message(), msg)
+        rule = MinLengthRule('hello', 'label', min_length=10, error_message=CUSTOM_MESSAGE)
+        self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
 
 
 class MaxLengthRuleTest(unittest.TestCase):
@@ -283,18 +338,27 @@ class MaxLengthRuleTest(unittest.TestCase):
         self.assertEqual(rule.get_error_message(), MaxLengthRule.default_error_message)
 
     def test_custom_message_used_if_provided(self):
-        msg = 'custom message'
-        rule = MaxLengthRule('abc', 'label', max_length=3, error_message=msg)
-        self.assertEqual(rule.get_error_message(), msg)
+        rule = MaxLengthRule('abc', 'label', max_length=3, error_message=CUSTOM_MESSAGE)
+        self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
 
 
 class RangeRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(RangeRule(20, 'label', valid_range=range(10, 100)).apply())
+        self.assertTrue(RangeRule(20, 'label', valid_range=range(100, 1, -1)).apply())
 
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(RangeRule(5, 'label', valid_range=range(10, 100)).apply())
         self.assertFalse(RangeRule(200, 'label', valid_range=range(10, 100)).apply())
+
+    def test_floats_are_never_in_range(self):
+        self.assertFalse(RangeRule(11.5, 'label', valid_range=range(10, 100)).apply())
+
+    def test_range_step_is_respected(self):
+        # with default step of 1, value 22 is in range
+        self.assertTrue(RangeRule(22, 'label', valid_range=range(10, 100)).apply())
+        # with step of 5, value 22 should not be considered in range
+        self.assertFalse(RangeRule(22, 'label', valid_range=range(10, 100, 5)).apply())
 
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = RangeRule(20, 'label', valid_range=range(10, 100))
@@ -306,23 +370,40 @@ class RangeRuleTest(unittest.TestCase):
         self.assertEqual(rule.get_error_message(), msg)
 
 
-class RegexRuleTest(unittest.TestCase):
+class IntervalRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
-        self.assertTrue(RegexRule('hello', 'label', pattern=r'^[a-z]+$').apply())
-        self.assertTrue(RegexRule('HELLO', 'label', pattern=r'^[a-z]+$', flags=re.IGNORECASE).apply())
+        self.assertTrue(IntervalRule(25, interval_from=10, interval_to=50, label='label').apply())
 
     def test_rule_returns_false_if_not_respected(self):
-        self.assertFalse(RegexRule('HELLO', 'label', pattern=r'^[a-z]+$').apply())
-        self.assertFalse(RegexRule('599.99', 'label', pattern=r'^[a-z]+$').apply())
-        self.assertFalse(RegexRule('', 'label', pattern=r'^[a-z]+$').apply())
+        self.assertFalse(IntervalRule(9, interval_from=10, interval_to=50, label='label').apply())
+        self.assertFalse(IntervalRule(51, interval_from=10, interval_to=50, label='label').apply())
 
     def test_default_message_is_used_if_no_custom_provided(self):
-        rule = RegexRule('hello', 'label', pattern=r'[a-z]+')
-        self.assertEqual(rule.get_error_message(), RegexRule.default_error_message)
+        rule = IntervalRule(9, interval_from=10, interval_to=50, label='label')
+        self.assertEqual(rule.get_error_message(), IntervalRule.default_error_message)
+
+    def test_custom_message_used_if_provided(self):
+        rule = IntervalRule(9, interval_from=10, interval_to=50, label='label', error_message=CUSTOM_MESSAGE)
+        self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
+
+
+class PatternRuleTest(unittest.TestCase):
+    def test_rule_returns_true_if_respected(self):
+        self.assertTrue(PatternRule('hello', 'label', pattern=r'^[a-z]+$').apply())
+        self.assertTrue(PatternRule('HELLO', 'label', pattern=r'^[a-z]+$', flags=re.IGNORECASE).apply())
+
+    def test_rule_returns_false_if_not_respected(self):
+        self.assertFalse(PatternRule('HELLO', 'label', pattern=r'^[a-z]+$').apply())
+        self.assertFalse(PatternRule('599.99', 'label', pattern=r'^[a-z]+$').apply())
+        self.assertFalse(PatternRule('', 'label', pattern=r'^[a-z]+$').apply())
+
+    def test_default_message_is_used_if_no_custom_provided(self):
+        rule = PatternRule('hello', 'label', pattern=r'[a-z]+')
+        self.assertEqual(rule.get_error_message(), PatternRule.default_error_message)
 
     def test_custom_message_used_if_provided(self):
         msg = 'custom message'
-        rule = RegexRule('hello', 'label', pattern=r'[a-z]+', error_message=msg)
+        rule = PatternRule('hello', 'label', pattern=r'[a-z]+', error_message=msg)
         self.assertEqual(rule.get_error_message(), msg)
 
 

@@ -1,6 +1,12 @@
 from abc import ABC, abstractmethod
 
 
+class ValidationException(Exception):
+    def __init__(self, errors: dict, message: str = 'Data did not validate.'):
+        super().__init__(message)
+        self.errors = errors
+
+
 class ValidationRule(ABC):
     """
     Base abstract rule class from which concrete ones must inherit from.
@@ -80,6 +86,15 @@ class Validator(ABC):
 
     def __init__(self, data: object):
         self.data = data
+
+    def __enter__(self):
+        validation = self.validate()
+        if not validation.valid:
+            raise ValidationException(validation.errors)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
 
     @abstractmethod
     def get_rules(self) -> list:
