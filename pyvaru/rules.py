@@ -23,7 +23,7 @@ class FullStringRule(ValidationRule):
     default_error_message = 'Invalid or empty string.'
 
     def apply(self):
-        value = self.apply_to
+        value = self.apply_to  # type: str
         return isinstance(value, str) and len(value.strip()) > 0
 
 
@@ -88,6 +88,7 @@ class MinLengthRule(ValidationRule):
         self.min_length = min_length
 
     def apply(self) -> bool:
+        # noinspection PyTypeChecker
         return len(self.apply_to) >= self.min_length
 
 
@@ -104,6 +105,7 @@ class MaxLengthRule(ValidationRule):
         self.max_length = max_length
 
     def apply(self) -> bool:
+        # noinspection PyTypeChecker
         return len(self.apply_to) <= self.max_length
 
 
@@ -138,4 +140,5 @@ class RegexRule(ValidationRule):
         self.flags = flags
 
     def apply(self) -> bool:
-        return re.match(self.pattern, self.apply_to, self.flags) is not None
+        string = self.apply_to  # type: str
+        return re.match(self.pattern, string, self.flags) is not None

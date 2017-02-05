@@ -44,8 +44,8 @@ class ValidationRule(ABC):
     @abstractmethod
     def apply(self) -> bool:
         """
-        Abstract method that must be implemented by concrete get_rules in order to return a boolean indicating whether the
-        rule is respected or not.
+        Abstract method that must be implemented by concrete get_rules in order to return a boolean
+        indicating whether the rule is respected or not.
 
         :return: True if the rule is respected, False otherwise
         :rtype: bool

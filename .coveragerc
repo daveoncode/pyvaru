@@ -1,0 +1,9 @@
+[run]
+omit =
+    tests.py
+debug =
+    sys
+
+[paths]
+source =
+    .
