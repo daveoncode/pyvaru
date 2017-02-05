@@ -50,7 +50,7 @@ class ValidationRule(ABC):
         :return: True if the rule is respected, False otherwise
         :rtype: bool
         """
-        pass
+        pass  # pragma: no cover
 
 
 class ValidationResult:
@@ -90,7 +90,7 @@ class Validator(ABC):
         :return: ValidationRule list
         :rtype: list
         """
-        pass
+        pass  # pragma: no cover
 
     def validate(self) -> ValidationResult:
         """

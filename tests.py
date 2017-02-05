@@ -1,19 +1,18 @@
-from unittest.case import TestCase
-
 import re
+import unittest
 
 from pyvaru import ValidationRule, Validator, ValidationResult
 from pyvaru.rules import TypeRule, FullStringRule, ChoiceRule, MinValueRule, MaxValueRule, MinLengthRule, \
     MaxLengthRule, RangeRule, RegexRule
 
 
-class ValidationRuleTest(TestCase):
+class ValidationRuleTest(unittest.TestCase):
     def test_rule_cannot_be_instantiated_because_is_abstract(self):
         with self.assertRaises(TypeError):
             ValidationRule('', 'test')
 
 
-class ValidatorTest(TestCase):
+class ValidatorTest(unittest.TestCase):
     def test_validator_cannot_be_instantiated_because_is_abstract(self):
         with self.assertRaises(TypeError):
             Validator({})
@@ -135,7 +134,7 @@ class ValidatorTest(TestCase):
         self.assertEqual(result.errors.get('Field A'), ['GtRuleFail'])
 
 
-class TypeRuleTest(TestCase):
+class TypeRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         rule = TypeRule({'a': 1, 'b': 2}, 'my_object', dict)
         self.assertTrue(rule.apply())
@@ -169,7 +168,7 @@ class TypeRuleTest(TestCase):
         self.assertEqual(rule.get_error_message(), custom_msg)
 
 
-class FullStringRuleTest(TestCase):
+class FullStringRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(FullStringRule('ciao', 'label').apply())
 
@@ -188,7 +187,7 @@ class FullStringRuleTest(TestCase):
         self.assertEqual(rule.get_error_message(), msg)
 
 
-class ChoiceRuleTest(TestCase):
+class ChoiceRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(ChoiceRule('B', 'label', choices=('A', 'B', 'C')).apply())
 
@@ -205,7 +204,7 @@ class ChoiceRuleTest(TestCase):
         self.assertEqual(rule.get_error_message(), msg)
 
 
-class MinValueRuleTest(TestCase):
+class MinValueRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(MinValueRule(100, 'label', min_value=50).apply())
 
@@ -222,7 +221,7 @@ class MinValueRuleTest(TestCase):
         self.assertEqual(rule.get_error_message(), msg)
 
 
-class MaxValueRuleTest(TestCase):
+class MaxValueRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(MaxValueRule(10, 'label', max_value=50).apply())
 
@@ -239,7 +238,7 @@ class MaxValueRuleTest(TestCase):
         self.assertEqual(rule.get_error_message(), msg)
 
 
-class MinLengthRuleTest(TestCase):
+class MinLengthRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(MinLengthRule('hello', 'label', min_length=3).apply())
         self.assertTrue(MinLengthRule(['foo', 'bar', 'baz'], 'label', min_length=3).apply())
@@ -264,7 +263,7 @@ class MinLengthRuleTest(TestCase):
         self.assertEqual(rule.get_error_message(), msg)
 
 
-class MaxLengthRuleTest(TestCase):
+class MaxLengthRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(MaxLengthRule('abc', 'label', max_length=3).apply())
         self.assertTrue(MaxLengthRule(['foo', 'bar', 'baz'], 'label', max_length=3).apply())
@@ -289,7 +288,7 @@ class MaxLengthRuleTest(TestCase):
         self.assertEqual(rule.get_error_message(), msg)
 
 
-class RangeRuleTest(TestCase):
+class RangeRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(RangeRule(20, 'label', valid_range=range(10, 100)).apply())
 
@@ -307,7 +306,7 @@ class RangeRuleTest(TestCase):
         self.assertEqual(rule.get_error_message(), msg)
 
 
-class RegexRuleTest(TestCase):
+class RegexRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(RegexRule('hello', 'label', pattern=r'^[a-z]+$').apply())
         self.assertTrue(RegexRule('HELLO', 'label', pattern=r'^[a-z]+$', flags=re.IGNORECASE).apply())
@@ -325,3 +324,7 @@ class RegexRuleTest(TestCase):
         msg = 'custom message'
         rule = RegexRule('hello', 'label', pattern=r'[a-z]+', error_message=msg)
         self.assertEqual(rule.get_error_message(), msg)
+
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2)
