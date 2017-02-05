@@ -9,11 +9,18 @@ pyvaru documentation
 .. toctree::
    :maxdepth: 5
 
+.. autosummary::
+   :toctree: _autosummary
+
+   pyvaru
+   pyvaru.rules
+
+
 .. automodule:: pyvaru
     :members:
     :inherited-members:
 
-.. automodule:: pyvaru.get_rules
+.. automodule:: pyvaru.rules
     :members:
     :inherited-members:
 
