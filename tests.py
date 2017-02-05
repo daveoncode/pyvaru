@@ -113,11 +113,13 @@ class ValidatorTest(unittest.TestCase):
                     ContainsRule(data['c'], 'Field C'),
                 ]
 
+        inner_code_calls = 0
         with self.assertRaises(ValidationException) as raise_context:
             with MyValidator({'a': 20, 'b': 1, 'c': 'hello world'}):
-                print("this won't print")
+                inner_code_calls += 1
 
         errors = raise_context.exception.errors
+        self.assertEqual(inner_code_calls, 0)
         self.assertIsInstance(errors, dict)
         self.assertEqual(errors.get('Field A'), ['GtRule not respected!'])
         self.assertEqual(errors.get('Field B'), [ValidationRule.default_error_message])
