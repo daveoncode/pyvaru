@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyvaru.rules &mdash; pyvaru 0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="pyvaru 0.1.0 documentation" href="../index.html"/>
+        <link rel="prev" title="pyvaru" href="pyvaru.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pyvaru
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="pyvaru.html">pyvaru</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pyvaru.rules</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">pyvaru</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>pyvaru.rules</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/_autosummary/pyvaru.rules.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-pyvaru.rules">
+<span id="pyvaru-rules"></span><h1>pyvaru.rules<a class="headerlink" href="#module-pyvaru.rules" title="Permalink to this headline">¶</a></h1>
+<p class="rubric">Classes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="../index.html#pyvaru.rules.ChoiceRule" title="pyvaru.rules.ChoiceRule"><code class="xref py py-obj docutils literal"><span class="pre">ChoiceRule</span></code></a>(apply_to:&nbsp;object,&nbsp;label:&nbsp;str,&nbsp;...)</td>
+<td>Ensure that the target value is contained in a provided list of possible options.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../index.html#pyvaru.rules.FullStringRule" title="pyvaru.rules.FullStringRule"><code class="xref py py-obj docutils literal"><span class="pre">FullStringRule</span></code></a>(apply_to:&nbsp;object,&nbsp;label:&nbsp;str,&nbsp;...)</td>
+<td>Ensure that the target value is a non empty string object.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../index.html#pyvaru.rules.IntervalRule" title="pyvaru.rules.IntervalRule"><code class="xref py py-obj docutils literal"><span class="pre">IntervalRule</span></code></a>(apply_to:&nbsp;object,&nbsp;label:&nbsp;str,&nbsp;...)</td>
+<td>Ensure that the target value is contained in the provided interval.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../index.html#pyvaru.rules.MaxLengthRule" title="pyvaru.rules.MaxLengthRule"><code class="xref py py-obj docutils literal"><span class="pre">MaxLengthRule</span></code></a>(apply_to:&nbsp;object,&nbsp;label:&nbsp;str,&nbsp;...)</td>
+<td>Ensure that the target value has a length &lt;= than the provided reference value.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../index.html#pyvaru.rules.MaxValueRule" title="pyvaru.rules.MaxValueRule"><code class="xref py py-obj docutils literal"><span class="pre">MaxValueRule</span></code></a>(apply_to:&nbsp;object,&nbsp;label:&nbsp;str,&nbsp;...)</td>
+<td>Ensure that the target value is &lt;= than the provided reference value.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../index.html#pyvaru.rules.MinLengthRule" title="pyvaru.rules.MinLengthRule"><code class="xref py py-obj docutils literal"><span class="pre">MinLengthRule</span></code></a>(apply_to:&nbsp;object,&nbsp;label:&nbsp;str,&nbsp;...)</td>
+<td>Ensure that the target value has a length &gt;= than the provided reference value.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../index.html#pyvaru.rules.MinValueRule" title="pyvaru.rules.MinValueRule"><code class="xref py py-obj docutils literal"><span class="pre">MinValueRule</span></code></a>(apply_to:&nbsp;object,&nbsp;label:&nbsp;str,&nbsp;...)</td>
+<td>Ensure that the target value is &gt;= than the provided reference value.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../index.html#pyvaru.rules.PatternRule" title="pyvaru.rules.PatternRule"><code class="xref py py-obj docutils literal"><span class="pre">PatternRule</span></code></a>(apply_to:&nbsp;object,&nbsp;label:&nbsp;str,&nbsp;...)</td>
+<td>Ensure that the target string respects the given pattern.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../index.html#pyvaru.rules.RangeRule" title="pyvaru.rules.RangeRule"><code class="xref py py-obj docutils literal"><span class="pre">RangeRule</span></code></a>(apply_to:&nbsp;object,&nbsp;label:&nbsp;str,&nbsp;...)</td>
+<td>Ensure that the target value is contained in the provided range.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../index.html#pyvaru.rules.TypeRule" title="pyvaru.rules.TypeRule"><code class="xref py py-obj docutils literal"><span class="pre">TypeRule</span></code></a>(apply_to:&nbsp;object,&nbsp;label:&nbsp;str,&nbsp;...)</td>
+<td>Ensure that the target value is an instance of the given type.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">ValidationRule</span></code>(apply_to:&nbsp;object,&nbsp;label:&nbsp;str,&nbsp;...)</td>
+<td>Base abstract rule class from which concrete ones must inherit from.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="pyvaru.html" class="btn btn-neutral" title="pyvaru" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Davide Zanotti.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
