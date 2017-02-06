@@ -5,4 +5,4 @@ python:
   - "3.6"
 script: python tests.py
 install:
-  - python setup.py -q install
+  - pip install .
