@@ -1,7 +1,6 @@
 What is pyvaru?
 ---------------
 
-
 Pyavaru is a simple, flexible and unobtrusive data validation library for Python 3 (3.4+), 
 based on the concept of validation rules.
 
@@ -112,3 +111,12 @@ In this case the code inside ``with`` will be executed only if the validation su
         # you can take a proper action and access validation.errors
         # in order to provide a useful message to the application user,
         # write logs or whatever
+
+Credits
+-------
+
+Pyvaru is developed and maintained by Davide Zanotti.
+
+Blog: http://www.daveoncode.com
+
+Twitter: https://twitter.com/daveoncode
