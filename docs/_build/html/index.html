@@ -146,8 +146,7 @@ based on the concept of validation rules.</p>
 <p>From the software design point of view, a rule is a class implementing the strategy pattern,
 by encapsulating the validation logic in an interface method called <code class="docutils literal"><span class="pre">apply()</span></code>.</p>
 <p>The library already offers a series of common validation rules like:</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><code class="docutils literal"><span class="pre">TypeRule</span></code> (it checks that the target value is an instance of the expected type)</li>
 <li><code class="docutils literal"><span class="pre">FullStringRule</span></code> (it checks the the target value is a string with content)</li>
 <li><code class="docutils literal"><span class="pre">ChoiceRule</span></code> (it checks that the target value is contained in a list of available options)</li>
@@ -162,7 +161,6 @@ by encapsulating the validation logic in an interface method called <code class=
 <li><code class="docutils literal"><span class="pre">FutureDateRule</span></code> (it checks that the target value is a date in the future)</li>
 <li><code class="docutils literal"><span class="pre">UniqueItemsRule</span></code> (it checks that the target iterable does not contain duplicated items)</li>
 </ul>
-</div></blockquote>
 <p>* where &#8220;x&#8221; is a provided reference value</p>
 <p>The developer is then free to create his custom rules by extending the abstract <code class="docutils literal"><span class="pre">ValidationRule</span></code>
 and implementing the logic in the <code class="docutils literal"><span class="pre">apply()</span></code> method.</p>

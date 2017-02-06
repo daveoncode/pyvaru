@@ -10,19 +10,19 @@ by encapsulating the validation logic in an interface method called ``apply()``.
 
 The library already offers a series of common validation rules like:
  
- - ``TypeRule`` (it checks that the target value is an instance of the expected type)
- - ``FullStringRule`` (it checks the the target value is a string with content)
- - ``ChoiceRule`` (it checks that the target value is contained in a list of available options)
- - ``MinValueRule`` (it checks that the target value is >= x) *
- - ``MaxValueRule`` (it checks that the target value is <= x) *
- - ``MinLengthRule`` (it checks that the target value length is >= x) *
- - ``MaxLengthRule`` (it checks that the target value length is <= x) *
- - ``RangeRule`` (it checks that the target value is contained in a given `range`) *
- - ``IntervalRule`` (it checks that the target value is contained in a given interval) *
- - ``PatternRule`` (it checks that the target value matches a given regular expression)
- - ``PastDateRule`` (it checks that the target value is a date in the past)
- - ``FutureDateRule`` (it checks that the target value is a date in the future)
- - ``UniqueItemsRule`` (it checks that the target iterable does not contain duplicated items)
+- ``TypeRule`` (it checks that the target value is an instance of the expected type)
+- ``FullStringRule`` (it checks the the target value is a string with content)
+- ``ChoiceRule`` (it checks that the target value is contained in a list of available options)
+- ``MinValueRule`` (it checks that the target value is >= x) *
+- ``MaxValueRule`` (it checks that the target value is <= x) *
+- ``MinLengthRule`` (it checks that the target value length is >= x) *
+- ``MaxLengthRule`` (it checks that the target value length is <= x) *
+- ``RangeRule`` (it checks that the target value is contained in a given `range`) *
+- ``IntervalRule`` (it checks that the target value is contained in a given interval) *
+- ``PatternRule`` (it checks that the target value matches a given regular expression)
+- ``PastDateRule`` (it checks that the target value is a date in the past)
+- ``FutureDateRule`` (it checks that the target value is a date in the future)
+- ``UniqueItemsRule`` (it checks that the target iterable does not contain duplicated items)
  
 
 \* where "x" is a provided reference value
