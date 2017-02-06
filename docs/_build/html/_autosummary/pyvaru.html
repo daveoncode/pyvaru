@@ -33,9 +33,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="pyvaru 0.1.0 documentation" href="../index.html"/>
-        <link rel="next" title="pyvaru.rules" href="pyvaru.rules.html"/>
-        <link rel="prev" title="pyvaru documentation" href="../index.html"/> 
+    <link rel="top" title="pyvaru 0.1.0 documentation" href="../index.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -84,11 +82,11 @@
           
             
             
-                <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">pyvaru</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pyvaru.rules.html">pyvaru.rules</a></li>
+                <!-- Local TOC -->
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">pyvaru</a></li>
 </ul>
-
+</div>
             
           
         </div>
@@ -155,13 +153,13 @@
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">ABC</span></code></td>
 <td>Helper class that provides a standard way to create an ABC using inheritance.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../index.html#pyvaru.ValidationResult" title="pyvaru.ValidationResult"><code class="xref py py-obj docutils literal"><span class="pre">ValidationResult</span></code></a>(errors:&nbsp;dict&nbsp;=&nbsp;None)</td>
+<tr class="row-even"><td><a class="reference internal" href="../contents.html#pyvaru.ValidationResult" title="pyvaru.ValidationResult"><code class="xref py py-obj docutils literal"><span class="pre">ValidationResult</span></code></a>(errors:&nbsp;dict&nbsp;=&nbsp;None)</td>
 <td>Represents a report of Validator&#8217;s validate() call.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../index.html#pyvaru.ValidationRule" title="pyvaru.ValidationRule"><code class="xref py py-obj docutils literal"><span class="pre">ValidationRule</span></code></a>(apply_to:&nbsp;object,&nbsp;label:&nbsp;str,&nbsp;...)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../contents.html#pyvaru.ValidationRule" title="pyvaru.ValidationRule"><code class="xref py py-obj docutils literal"><span class="pre">ValidationRule</span></code></a>(apply_to:&nbsp;object,&nbsp;label:&nbsp;str,&nbsp;...)</td>
 <td>Base abstract rule class from which concrete ones must inherit from.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../index.html#pyvaru.Validator" title="pyvaru.Validator"><code class="xref py py-obj docutils literal"><span class="pre">Validator</span></code></a>(data:&nbsp;object)</td>
+<tr class="row-even"><td><a class="reference internal" href="../contents.html#pyvaru.Validator" title="pyvaru.Validator"><code class="xref py py-obj docutils literal"><span class="pre">Validator</span></code></a>(data:&nbsp;object)</td>
 <td>Validate a data model against a list of ValidationRule(s).</td>
 </tr>
 </tbody>
@@ -173,8 +171,8 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">ValidationException</span></code>(...)</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="../contents.html#pyvaru.ValidationException" title="pyvaru.ValidationException"><code class="xref py py-obj docutils literal"><span class="pre">ValidationException</span></code></a>(...)</td>
+<td>Internal exception used by the library to represent a validation failure when using a Validator as a context processor.</td>
 </tr>
 </tbody>
 </table>
@@ -184,15 +182,6 @@
            </div>
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="pyvaru.rules.html" class="btn btn-neutral float-right" title="pyvaru.rules" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="../index.html" class="btn btn-neutral" title="pyvaru documentation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

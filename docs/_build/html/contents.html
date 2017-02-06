@@ -1,0 +1,1007 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Core API &mdash; pyvaru 0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="pyvaru 0.1.0 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyvaru
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Core API</a></li>
+<li><a class="reference internal" href="#module-pyvaru.rules">Generic validation rules</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">pyvaru</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Core API</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/contents.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#module-pyvaru" title="pyvaru"><code class="xref py py-obj docutils literal"><span class="pre">pyvaru</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#module-pyvaru.rules" title="pyvaru.rules"><code class="xref py py-obj docutils literal"><span class="pre">pyvaru.rules</span></code></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="module-pyvaru">
+<span id="core-api"></span><h1>Core API<a class="headerlink" href="#module-pyvaru" title="Permalink to this headline">¶</a></h1>
+<dl class="exception">
+<dt id="pyvaru.ValidationException">
+<em class="property">exception </em><code class="descclassname">pyvaru.</code><code class="descname">ValidationException</code><span class="sig-paren">(</span><em>validation_result: pyvaru.ValidationResult</em>, <em>message: str = 'Data did not validate.'</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.ValidationException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal exception used by the library to represent a validation failure when using a Validator as a context
+processor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>validation_result</strong> (<a class="reference internal" href="#pyvaru.ValidationResult" title="pyvaru.ValidationResult"><em>ValidationResult</em></a>) &#8211; Validation result returned by validator.</li>
+<li><strong>message</strong> (<em>str</em>) &#8211; Error message</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyvaru.ValidationException.with_traceback">
+<code class="descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.ValidationException.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) &#8211;
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyvaru.ValidationResult">
+<em class="property">class </em><code class="descclassname">pyvaru.</code><code class="descname">ValidationResult</code><span class="sig-paren">(</span><em>errors: dict = None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.ValidationResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a report of Validator&#8217;s validate() call.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>dict</em>) &#8211; Map containing errors descriptions (if one ore more get_rules are not respected)</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyvaru.ValidationResult.is_successful">
+<code class="descname">is_successful</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; bool<a class="headerlink" href="#pyvaru.ValidationResult.is_successful" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if the validation is successful, False otherwise.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyvaru.ValidationRule">
+<em class="property">class </em><code class="descclassname">pyvaru.</code><code class="descname">ValidationRule</code><span class="sig-paren">(</span><em>apply_to: object</em>, <em>label: str</em>, <em>error_message: str = None</em>, <em>stop_if_invalid: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.ValidationRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base abstract rule class from which concrete ones must inherit from.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>apply_to</strong> (<em>object</em>) &#8211; Value against which the rule is applied (can be any type).</li>
+<li><strong>label</strong> (<em>str</em>) &#8211; Short string describing the field that will be validated (e.g. &#8220;phone number&#8221;, &#8220;user name&#8221;...).     This string will be used as the key in the ValidationResult error dictionary.</li>
+<li><strong>error_message</strong> (<em>str</em>) &#8211; Custom message that will be used instead of the &#8220;default_error_message&#8221;.</li>
+<li><strong>stop_if_invalid</strong> (<em>bool</em>) &#8211; True to prevent Validator from processing the rest of the get_rules if the current one     is not respected, False (default) to collect all the possible errors.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyvaru.ValidationRule.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; bool<a class="headerlink" href="#pyvaru.ValidationRule.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method that must be implemented by concrete get_rules in order to return a boolean
+indicating whether the rule is respected or not.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if the rule is respected, False otherwise</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyvaru.ValidationRule.default_error_message">
+<code class="descname">default_error_message</code><em class="property"> = 'Data is invalid.'</em><a class="headerlink" href="#pyvaru.ValidationRule.default_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default error message for the rule (class attribute).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyvaru.ValidationRule.get_error_message">
+<code class="descname">get_error_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; str<a class="headerlink" href="#pyvaru.ValidationRule.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the message that will be used by the validator if the rule is not respected.
+If a custom error message is provided during rule instantiation that one will be used,
+otherwise the default one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Error message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyvaru.ValidationRule.type_error_message">
+<code class="descname">type_error_message</code><em class="property"> = 'Data type is invalid.'</em><a class="headerlink" href="#pyvaru.ValidationRule.type_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error message used if the value that is being validated is not the expected type (TypeError exception).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyvaru.Validator">
+<em class="property">class </em><code class="descclassname">pyvaru.</code><code class="descname">Validator</code><span class="sig-paren">(</span><em>data: object</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.Validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate a data model against a list of ValidationRule(s).
+This class is abstract, concrete validators must inherit from Validator in order to provide a
+an actual implementation of get_rules().</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>object</em>) &#8211; Data model to validate (like a dict or a custom Python object instance).</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyvaru.Validator.get_rules">
+<code class="descname">get_rules</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; list<a class="headerlink" href="#pyvaru.Validator.get_rules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concrete validators must implement this abstract method in order to return a list of ValidationRule(s),
+that will be used to validate the model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">ValidationRule list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyvaru.Validator.validate">
+<code class="descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; pyvaru.ValidationResult<a class="headerlink" href="#pyvaru.Validator.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the configured ValidationRule(s) (in the given order) and return a ValidationResult object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">validation result</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pyvaru.ValidationResult" title="pyvaru.ValidationResult">ValidationResult</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyvaru.rules">
+<span id="generic-validation-rules"></span><h1>Generic validation rules<a class="headerlink" href="#module-pyvaru.rules" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pyvaru.rules.ChoiceRule">
+<em class="property">class </em><code class="descclassname">pyvaru.rules.</code><code class="descname">ChoiceRule</code><span class="sig-paren">(</span><em>apply_to: object</em>, <em>label: str</em>, <em>choices: tuple</em>, <em>error_message: str = None</em>, <em>stop_if_invalid: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.rules.ChoiceRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that the target value is contained in a provided list of possible options.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>apply_to</strong> (<em>object</em>) &#8211; Value against which the rule is applied (can be any type).</li>
+<li><strong>label</strong> (<em>str</em>) &#8211; Short string describing the field that will be validated (e.g. &#8220;phone number&#8221;, &#8220;user name&#8221;...).     This string will be used as the key in the ValidationResult error dictionary.</li>
+<li><strong>choices</strong> (<em>tuple</em>) &#8211; Available options.</li>
+<li><strong>error_message</strong> (<em>str</em>) &#8211; Custom message that will be used instead of the &#8220;default_error_message&#8221;.</li>
+<li><strong>stop_if_invalid</strong> (<em>bool</em>) &#8211; True to prevent Validator from processing the rest of the get_rules if the current one     is not respected, False (default) to collect all the possible errors.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pyvaru.rules.ChoiceRule.default_error_message">
+<code class="descname">default_error_message</code><em class="property"> = 'Value not found in available choices.'</em><a class="headerlink" href="#pyvaru.rules.ChoiceRule.default_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default error message for the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyvaru.rules.ChoiceRule.get_error_message">
+<code class="descname">get_error_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; str<a class="headerlink" href="#pyvaru.rules.ChoiceRule.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the message that will be used by the validator if the rule is not respected.
+If a custom error message is provided during rule instantiation that one will be used,
+otherwise the default one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Error message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyvaru.rules.FullStringRule">
+<em class="property">class </em><code class="descclassname">pyvaru.rules.</code><code class="descname">FullStringRule</code><span class="sig-paren">(</span><em>apply_to: object</em>, <em>label: str</em>, <em>error_message: str = None</em>, <em>stop_if_invalid: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.rules.FullStringRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that the target value is a non empty string object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>apply_to</strong> (<em>object</em>) &#8211; Value against which the rule is applied (can be any type).</li>
+<li><strong>label</strong> (<em>str</em>) &#8211; Short string describing the field that will be validated (e.g. &#8220;phone number&#8221;, &#8220;user name&#8221;...).     This string will be used as the key in the ValidationResult error dictionary.</li>
+<li><strong>error_message</strong> (<em>str</em>) &#8211; Custom message that will be used instead of the &#8220;default_error_message&#8221;.</li>
+<li><strong>stop_if_invalid</strong> (<em>bool</em>) &#8211; True to prevent Validator from processing the rest of the get_rules if the current one     is not respected, False (default) to collect all the possible errors.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pyvaru.rules.FullStringRule.default_error_message">
+<code class="descname">default_error_message</code><em class="property"> = 'String is empty.'</em><a class="headerlink" href="#pyvaru.rules.FullStringRule.default_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default error message for the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyvaru.rules.FullStringRule.get_error_message">
+<code class="descname">get_error_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; str<a class="headerlink" href="#pyvaru.rules.FullStringRule.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the message that will be used by the validator if the rule is not respected.
+If a custom error message is provided during rule instantiation that one will be used,
+otherwise the default one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Error message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyvaru.rules.FullStringRule.type_error_message">
+<code class="descname">type_error_message</code><em class="property"> = 'Not a string.'</em><a class="headerlink" href="#pyvaru.rules.FullStringRule.type_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error message used if the value that is being validated is not a string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyvaru.rules.FutureDateRule">
+<em class="property">class </em><code class="descclassname">pyvaru.rules.</code><code class="descname">FutureDateRule</code><span class="sig-paren">(</span><em>apply_to: object</em>, <em>label: str</em>, <em>reference_date: datetime.datetime = None</em>, <em>error_message: str = None</em>, <em>stop_if_invalid: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.rules.FutureDateRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that the target value is a future date.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>apply_to</strong> (<em>object</em>) &#8211; Value against which the rule is applied.</li>
+<li><strong>label</strong> (<em>str</em>) &#8211; Short string describing the field that will be validated (e.g. &#8220;phone number&#8221;, &#8220;user name&#8221;...).     This string will be used as the key in the ValidationResult error dictionary.</li>
+<li><strong>reference_date</strong> (<em>datetime</em>) &#8211; Date used for time checking (default to datetime.now()).</li>
+<li><strong>error_message</strong> (<em>str</em>) &#8211; Custom message that will be used instead of the &#8220;default_error_message&#8221;.</li>
+<li><strong>stop_if_invalid</strong> (<em>bool</em>) &#8211; True to prevent Validator from processing the rest of the get_rules if the current one     is not respected, False (default) to collect all the possible errors.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pyvaru.rules.FutureDateRule.default_error_message">
+<code class="descname">default_error_message</code><em class="property"> = 'Not a future date.'</em><a class="headerlink" href="#pyvaru.rules.FutureDateRule.default_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default error message for the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyvaru.rules.FutureDateRule.get_error_message">
+<code class="descname">get_error_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; str<a class="headerlink" href="#pyvaru.rules.FutureDateRule.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the message that will be used by the validator if the rule is not respected.
+If a custom error message is provided during rule instantiation that one will be used,
+otherwise the default one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Error message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyvaru.rules.FutureDateRule.type_error_message">
+<code class="descname">type_error_message</code><em class="property"> = 'Not a date object.'</em><a class="headerlink" href="#pyvaru.rules.FutureDateRule.type_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error message used if the value that is being validated is not a date.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyvaru.rules.IntervalRule">
+<em class="property">class </em><code class="descclassname">pyvaru.rules.</code><code class="descname">IntervalRule</code><span class="sig-paren">(</span><em>apply_to: object</em>, <em>label: str</em>, <em>interval_from: float</em>, <em>interval_to: float</em>, <em>error_message: str = None</em>, <em>stop_if_invalid: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.rules.IntervalRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that the target value is contained in the provided interval.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>apply_to</strong> (<em>object</em>) &#8211; Value against which the rule is applied (can be any type).</li>
+<li><strong>label</strong> (<em>str</em>) &#8211; Short string describing the field that will be validated (e.g. &#8220;phone number&#8221;, &#8220;user name&#8221;...).     This string will be used as the key in the ValidationResult error dictionary.</li>
+<li><strong>interval_from</strong> (<em>float</em>) &#8211; Minimum allowed value.</li>
+<li><strong>interval_to</strong> (<em>float</em>) &#8211; Maximum allowed value.</li>
+<li><strong>error_message</strong> (<em>str</em>) &#8211; Custom message that will be used instead of the &#8220;default_error_message&#8221;.</li>
+<li><strong>stop_if_invalid</strong> (<em>bool</em>) &#8211; True to prevent Validator from processing the rest of the get_rules if the current one     is not respected, False (default) to collect all the possible errors.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pyvaru.rules.IntervalRule.default_error_message">
+<code class="descname">default_error_message</code><em class="property"> = 'Value is not in interval.'</em><a class="headerlink" href="#pyvaru.rules.IntervalRule.default_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default error message for the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyvaru.rules.IntervalRule.get_error_message">
+<code class="descname">get_error_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; str<a class="headerlink" href="#pyvaru.rules.IntervalRule.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the message that will be used by the validator if the rule is not respected.
+If a custom error message is provided during rule instantiation that one will be used,
+otherwise the default one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Error message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyvaru.rules.MaxLengthRule">
+<em class="property">class </em><code class="descclassname">pyvaru.rules.</code><code class="descname">MaxLengthRule</code><span class="sig-paren">(</span><em>apply_to: object</em>, <em>label: str</em>, <em>max_length: int</em>, <em>error_message: str = None</em>, <em>stop_if_invalid: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.rules.MaxLengthRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that the target value has a length &lt;= than the provided reference value.
+This rule can be applied to all python objects supporting len() (strings, lists, tuples, sets, dicts... and even
+custom types).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>apply_to</strong> (<em>object</em>) &#8211; Value against which the rule is applied (can be any type).</li>
+<li><strong>label</strong> (<em>str</em>) &#8211; Short string describing the field that will be validated (e.g. &#8220;phone number&#8221;, &#8220;user name&#8221;...).     This string will be used as the key in the ValidationResult error dictionary.</li>
+<li><strong>max_length</strong> (<em>int</em>) &#8211; Maximum length allowed.</li>
+<li><strong>error_message</strong> (<em>str</em>) &#8211; Custom message that will be used instead of the &#8220;default_error_message&#8221;.</li>
+<li><strong>stop_if_invalid</strong> (<em>bool</em>) &#8211; True to prevent Validator from processing the rest of the get_rules if the current one     is not respected, False (default) to collect all the possible errors.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pyvaru.rules.MaxLengthRule.default_error_message">
+<code class="descname">default_error_message</code><em class="property"> = 'Length is greater than expected one.'</em><a class="headerlink" href="#pyvaru.rules.MaxLengthRule.default_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default error message for the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyvaru.rules.MaxLengthRule.get_error_message">
+<code class="descname">get_error_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; str<a class="headerlink" href="#pyvaru.rules.MaxLengthRule.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the message that will be used by the validator if the rule is not respected.
+If a custom error message is provided during rule instantiation that one will be used,
+otherwise the default one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Error message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyvaru.rules.MaxValueRule">
+<em class="property">class </em><code class="descclassname">pyvaru.rules.</code><code class="descname">MaxValueRule</code><span class="sig-paren">(</span><em>apply_to: object</em>, <em>label: str</em>, <em>max_value: float</em>, <em>error_message: str = None</em>, <em>stop_if_invalid: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.rules.MaxValueRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that the target value is &lt;= than the provided reference value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>apply_to</strong> (<em>object</em>) &#8211; Value against which the rule is applied (can be any type).</li>
+<li><strong>label</strong> (<em>str</em>) &#8211; Short string describing the field that will be validated (e.g. &#8220;phone number&#8221;, &#8220;user name&#8221;...).     This string will be used as the key in the ValidationResult error dictionary.</li>
+<li><strong>max_value</strong> (<em>float</em>) &#8211; Maximum value allowed.</li>
+<li><strong>error_message</strong> (<em>str</em>) &#8211; Custom message that will be used instead of the &#8220;default_error_message&#8221;.</li>
+<li><strong>stop_if_invalid</strong> (<em>bool</em>) &#8211; True to prevent Validator from processing the rest of the get_rules if the current one     is not respected, False (default) to collect all the possible errors.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pyvaru.rules.MaxValueRule.default_error_message">
+<code class="descname">default_error_message</code><em class="property"> = 'Value is greater than expected one.'</em><a class="headerlink" href="#pyvaru.rules.MaxValueRule.default_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default error message for the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyvaru.rules.MaxValueRule.get_error_message">
+<code class="descname">get_error_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; str<a class="headerlink" href="#pyvaru.rules.MaxValueRule.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the message that will be used by the validator if the rule is not respected.
+If a custom error message is provided during rule instantiation that one will be used,
+otherwise the default one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Error message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyvaru.rules.MinLengthRule">
+<em class="property">class </em><code class="descclassname">pyvaru.rules.</code><code class="descname">MinLengthRule</code><span class="sig-paren">(</span><em>apply_to: object</em>, <em>label: str</em>, <em>min_length: int</em>, <em>error_message: str = None</em>, <em>stop_if_invalid: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.rules.MinLengthRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that the target value has a length &gt;= than the provided reference value.
+This rule can be applied to all python objects supporting len() (strings, lists, tuples, sets, dicts... and even
+custom types).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>apply_to</strong> (<em>object</em>) &#8211; Value against which the rule is applied (can be any type).</li>
+<li><strong>label</strong> (<em>str</em>) &#8211; Short string describing the field that will be validated (e.g. &#8220;phone number&#8221;, &#8220;user name&#8221;...).     This string will be used as the key in the ValidationResult error dictionary.</li>
+<li><strong>min_length</strong> (<em>int</em>) &#8211; Minimum length allowed.</li>
+<li><strong>error_message</strong> (<em>str</em>) &#8211; Custom message that will be used instead of the &#8220;default_error_message&#8221;.</li>
+<li><strong>stop_if_invalid</strong> (<em>bool</em>) &#8211; True to prevent Validator from processing the rest of the get_rules if the current one     is not respected, False (default) to collect all the possible errors.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pyvaru.rules.MinLengthRule.default_error_message">
+<code class="descname">default_error_message</code><em class="property"> = 'Length is smaller than expected one.'</em><a class="headerlink" href="#pyvaru.rules.MinLengthRule.default_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default error message for the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyvaru.rules.MinLengthRule.get_error_message">
+<code class="descname">get_error_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; str<a class="headerlink" href="#pyvaru.rules.MinLengthRule.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the message that will be used by the validator if the rule is not respected.
+If a custom error message is provided during rule instantiation that one will be used,
+otherwise the default one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Error message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyvaru.rules.MinValueRule">
+<em class="property">class </em><code class="descclassname">pyvaru.rules.</code><code class="descname">MinValueRule</code><span class="sig-paren">(</span><em>apply_to: object</em>, <em>label: str</em>, <em>min_value: float</em>, <em>error_message: str = None</em>, <em>stop_if_invalid: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.rules.MinValueRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that the target value is &gt;= than the provided reference value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>apply_to</strong> (<em>object</em>) &#8211; Value against which the rule is applied (can be any type).</li>
+<li><strong>label</strong> (<em>str</em>) &#8211; Short string describing the field that will be validated (e.g. &#8220;phone number&#8221;, &#8220;user name&#8221;...).     This string will be used as the key in the ValidationResult error dictionary.</li>
+<li><strong>min_value</strong> (<em>float</em>) &#8211; Minimum value allowed.</li>
+<li><strong>error_message</strong> (<em>str</em>) &#8211; Custom message that will be used instead of the &#8220;default_error_message&#8221;.</li>
+<li><strong>stop_if_invalid</strong> (<em>bool</em>) &#8211; True to prevent Validator from processing the rest of the get_rules if the current one     is not respected, False (default) to collect all the possible errors.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pyvaru.rules.MinValueRule.default_error_message">
+<code class="descname">default_error_message</code><em class="property"> = 'Value is smaller than expected one.'</em><a class="headerlink" href="#pyvaru.rules.MinValueRule.default_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default error message for the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyvaru.rules.MinValueRule.get_error_message">
+<code class="descname">get_error_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; str<a class="headerlink" href="#pyvaru.rules.MinValueRule.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the message that will be used by the validator if the rule is not respected.
+If a custom error message is provided during rule instantiation that one will be used,
+otherwise the default one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Error message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyvaru.rules.PastDateRule">
+<em class="property">class </em><code class="descclassname">pyvaru.rules.</code><code class="descname">PastDateRule</code><span class="sig-paren">(</span><em>apply_to: object</em>, <em>label: str</em>, <em>reference_date: datetime.datetime = None</em>, <em>error_message: str = None</em>, <em>stop_if_invalid: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.rules.PastDateRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that the target value is a past date.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>apply_to</strong> (<em>object</em>) &#8211; Value against which the rule is applied.</li>
+<li><strong>label</strong> (<em>str</em>) &#8211; Short string describing the field that will be validated (e.g. &#8220;phone number&#8221;, &#8220;user name&#8221;...).     This string will be used as the key in the ValidationResult error dictionary.</li>
+<li><strong>reference_date</strong> (<em>datetime</em>) &#8211; Date used for time checking (default to datetime.now()).</li>
+<li><strong>error_message</strong> (<em>str</em>) &#8211; Custom message that will be used instead of the &#8220;default_error_message&#8221;.</li>
+<li><strong>stop_if_invalid</strong> (<em>bool</em>) &#8211; True to prevent Validator from processing the rest of the get_rules if the current one     is not respected, False (default) to collect all the possible errors.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pyvaru.rules.PastDateRule.default_error_message">
+<code class="descname">default_error_message</code><em class="property"> = 'Not a past date.'</em><a class="headerlink" href="#pyvaru.rules.PastDateRule.default_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default error message for the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyvaru.rules.PastDateRule.get_error_message">
+<code class="descname">get_error_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; str<a class="headerlink" href="#pyvaru.rules.PastDateRule.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the message that will be used by the validator if the rule is not respected.
+If a custom error message is provided during rule instantiation that one will be used,
+otherwise the default one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Error message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyvaru.rules.PastDateRule.type_error_message">
+<code class="descname">type_error_message</code><em class="property"> = 'Not a date object.'</em><a class="headerlink" href="#pyvaru.rules.PastDateRule.type_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error message used if the value that is being validated is not a date.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyvaru.rules.PatternRule">
+<em class="property">class </em><code class="descclassname">pyvaru.rules.</code><code class="descname">PatternRule</code><span class="sig-paren">(</span><em>apply_to: object</em>, <em>label: str</em>, <em>pattern: str</em>, <em>flags: int = 0</em>, <em>error_message: str = None</em>, <em>stop_if_invalid: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.rules.PatternRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that the target string respects the given pattern.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>apply_to</strong> (<em>object</em>) &#8211; Value against which the rule is applied (can be any type).</li>
+<li><strong>pattern</strong> (<em>str</em>) &#8211; Regex used for pattern matching.</li>
+<li><strong>flags</strong> (<em>int</em>) &#8211; Regex flags.</li>
+<li><strong>label</strong> (<em>str</em>) &#8211; Short string describing the field that will be validated (e.g. &#8220;phone number&#8221;, &#8220;user name&#8221;...).     This string will be used as the key in the ValidationResult error dictionary.</li>
+<li><strong>error_message</strong> (<em>str</em>) &#8211; Custom message that will be used instead of the &#8220;default_error_message&#8221;.</li>
+<li><strong>stop_if_invalid</strong> (<em>bool</em>) &#8211; True to prevent Validator from processing the rest of the get_rules if the current one     is not respected, False (default) to collect all the possible errors.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pyvaru.rules.PatternRule.default_error_message">
+<code class="descname">default_error_message</code><em class="property"> = 'Value does not match expected pattern.'</em><a class="headerlink" href="#pyvaru.rules.PatternRule.default_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default error message for the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyvaru.rules.PatternRule.get_error_message">
+<code class="descname">get_error_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; str<a class="headerlink" href="#pyvaru.rules.PatternRule.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the message that will be used by the validator if the rule is not respected.
+If a custom error message is provided during rule instantiation that one will be used,
+otherwise the default one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Error message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyvaru.rules.PatternRule.type_error_message">
+<code class="descname">type_error_message</code><em class="property"> = 'Not a string.'</em><a class="headerlink" href="#pyvaru.rules.PatternRule.type_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error message used if the value that is being validated is not a string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyvaru.rules.RangeRule">
+<em class="property">class </em><code class="descclassname">pyvaru.rules.</code><code class="descname">RangeRule</code><span class="sig-paren">(</span><em>apply_to: object</em>, <em>label: str</em>, <em>valid_range: range</em>, <em>error_message: str = None</em>, <em>stop_if_invalid: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.rules.RangeRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that the target value is contained in the provided range.</p>
+<p><strong>IMPORTANT</strong>: this rule handles python range() objects (and its &#8220;step&#8221; configuration),
+so does not support floats as test value
+(testing for a float will always fail and even for an integer if it doesn&#8217;t match the step increment).</p>
+<p>For a validation like &#8220;value <em>BETWEEN</em> x <em>AND</em> y&#8221; use <strong>IntervalRule</strong> instead!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>apply_to</strong> (<em>object</em>) &#8211; Value against which the rule is applied (can be any type).</li>
+<li><strong>label</strong> (<em>str</em>) &#8211; Short string describing the field that will be validated (e.g. &#8220;phone number&#8221;, &#8220;user name&#8221;...).     This string will be used as the key in the ValidationResult error dictionary.</li>
+<li><strong>valid_range</strong> (<em>range</em>) &#8211; Allowed range.</li>
+<li><strong>error_message</strong> (<em>str</em>) &#8211; Custom message that will be used instead of the &#8220;default_error_message&#8221;.</li>
+<li><strong>stop_if_invalid</strong> (<em>bool</em>) &#8211; True to prevent Validator from processing the rest of the get_rules if the current one     is not respected, False (default) to collect all the possible errors.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pyvaru.rules.RangeRule.default_error_message">
+<code class="descname">default_error_message</code><em class="property"> = 'Value is out of range.'</em><a class="headerlink" href="#pyvaru.rules.RangeRule.default_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default error message for the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyvaru.rules.RangeRule.get_error_message">
+<code class="descname">get_error_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; str<a class="headerlink" href="#pyvaru.rules.RangeRule.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the message that will be used by the validator if the rule is not respected.
+If a custom error message is provided during rule instantiation that one will be used,
+otherwise the default one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Error message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyvaru.rules.TypeRule">
+<em class="property">class </em><code class="descclassname">pyvaru.rules.</code><code class="descname">TypeRule</code><span class="sig-paren">(</span><em>apply_to: object</em>, <em>label: str</em>, <em>valid_type: type</em>, <em>error_message: str = None</em>, <em>stop_if_invalid: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.rules.TypeRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that the target value is an instance of the given type.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>apply_to</strong> (<em>object</em>) &#8211; Value against which the rule is applied (can be any type).</li>
+<li><strong>label</strong> (<em>str</em>) &#8211; Short string describing the field that will be validated (e.g. &#8220;phone number&#8221;, &#8220;user name&#8221;...).     This string will be used as the key in the ValidationResult error dictionary.</li>
+<li><strong>valid_type</strong> (<em>type</em>) &#8211; Valid class</li>
+<li><strong>error_message</strong> (<em>str</em>) &#8211; Custom message that will be used instead of the &#8220;default_error_message&#8221;.</li>
+<li><strong>stop_if_invalid</strong> (<em>bool</em>) &#8211; True to prevent Validator from processing the rest of the get_rules if the current one     is not respected, False (default) to collect all the possible errors.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pyvaru.rules.TypeRule.default_error_message">
+<code class="descname">default_error_message</code><em class="property"> = 'Object is not an instance of the expected type.'</em><a class="headerlink" href="#pyvaru.rules.TypeRule.default_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default error message for the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyvaru.rules.TypeRule.get_error_message">
+<code class="descname">get_error_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; str<a class="headerlink" href="#pyvaru.rules.TypeRule.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the message that will be used by the validator if the rule is not respected.
+If a custom error message is provided during rule instantiation that one will be used,
+otherwise the default one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Error message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyvaru.rules.UniqueItemsRule">
+<em class="property">class </em><code class="descclassname">pyvaru.rules.</code><code class="descname">UniqueItemsRule</code><span class="sig-paren">(</span><em>apply_to: object</em>, <em>label: str</em>, <em>error_message: str = None</em>, <em>stop_if_invalid: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.rules.UniqueItemsRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that the target list (or iterable) does not contain duplicated items.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>apply_to</strong> (<em>object</em>) &#8211; Value against which the rule is applied (can be any type).</li>
+<li><strong>label</strong> (<em>str</em>) &#8211; Short string describing the field that will be validated (e.g. &#8220;phone number&#8221;, &#8220;user name&#8221;...).     This string will be used as the key in the ValidationResult error dictionary.</li>
+<li><strong>error_message</strong> (<em>str</em>) &#8211; Custom message that will be used instead of the &#8220;default_error_message&#8221;.</li>
+<li><strong>stop_if_invalid</strong> (<em>bool</em>) &#8211; True to prevent Validator from processing the rest of the get_rules if the current one     is not respected, False (default) to collect all the possible errors.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pyvaru.rules.UniqueItemsRule.default_error_message">
+<code class="descname">default_error_message</code><em class="property"> = 'List contains duplicated items.'</em><a class="headerlink" href="#pyvaru.rules.UniqueItemsRule.default_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default error message for the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyvaru.rules.UniqueItemsRule.get_error_message">
+<code class="descname">get_error_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; str<a class="headerlink" href="#pyvaru.rules.UniqueItemsRule.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the message that will be used by the validator if the rule is not respected.
+If a custom error message is provided during rule instantiation that one will be used,
+otherwise the default one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Error message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyvaru.rules.UniqueItemsRule.type_error_message">
+<code class="descname">type_error_message</code><em class="property"> = 'Not an iterable object.'</em><a class="headerlink" href="#pyvaru.rules.UniqueItemsRule.type_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error message used if the value that is being validated is not an iterable one.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Davide Zanotti.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

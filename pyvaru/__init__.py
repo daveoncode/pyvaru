@@ -80,6 +80,16 @@ class ValidationResult:
 
 
 class ValidationException(Exception):
+    """
+    Internal exception used by the library to represent a validation failure when using a Validator as a context
+    processor.
+
+    :param validation_result: Validation result returned by validator.
+    :type validation_result: ValidationResult
+    :param message: Error message
+    :type message: str
+    """
+
     def __init__(self, validation_result: ValidationResult, message: str = 'Data did not validate.'):
         super().__init__(message)
         self.validation_result = validation_result
