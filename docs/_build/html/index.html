@@ -217,20 +217,19 @@ validate we have to provide one or more proper rule(s).</p>
 </pre></div>
 </div>
 <p>Finally we have two choices regarding how to use our custom validator:</p>
-<ol class="arabic">
-<li><p class="first">As a context processor:</p>
-<blockquote>
-<div><div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">UserValidator</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+<ol class="arabic simple">
+<li>As a context processor:</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">UserValidator</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
     <span class="c1"># do whatever you want with your valid model</span>
 </pre></div>
 </div>
 <p>In this case the code inside <code class="docutils literal"><span class="pre">with</span></code> will be executed only if the validation succeed, otherwise a
 <code class="docutils literal"><span class="pre">ValidationException</span></code> (containing a <code class="docutils literal"><span class="pre">validation_result</span></code> property with the appropriate report) is raised.</p>
-</div></blockquote>
-</li>
-<li><p class="first">By invoking the <code class="docutils literal"><span class="pre">validate()</span></code> method (which returns a <code class="docutils literal"><span class="pre">ValidationResult</span></code>)</p>
-<blockquote>
-<div><div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">validation</span> <span class="o">=</span> <span class="n">UserValidator</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+<ol class="arabic simple" start="2">
+<li>By invoking the <code class="docutils literal"><span class="pre">validate()</span></code> method (which returns a <code class="docutils literal"><span class="pre">ValidationResult</span></code>)</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">validation</span> <span class="o">=</span> <span class="n">UserValidator</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
 <span class="k">if</span> <span class="n">validation</span><span class="o">.</span><span class="n">is_successful</span><span class="p">():</span>
     <span class="c1"># do whatever you want with your valid model</span>
 <span class="k">else</span><span class="p">:</span>
@@ -239,9 +238,6 @@ validate we have to provide one or more proper rule(s).</p>
     <span class="c1"># write logs or whatever</span>
 </pre></div>
 </div>
-</div></blockquote>
-</li>
-</ol>
 </div>
 </div>
 <div class="section" id="indices-and-tables">

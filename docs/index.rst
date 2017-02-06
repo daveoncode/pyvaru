@@ -6,7 +6,7 @@ Pyvaru documentation
 .. toctree::
    :maxdepth: 5
 
-.. include:: ../README
+.. include:: ../README.rst
 
 .. ref::`contents`
 

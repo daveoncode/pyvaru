@@ -93,22 +93,22 @@ Finally we have two choices regarding how to use our custom validator:
     
 1. As a context processor:
 
-    .. code-block:: python
+.. code-block:: python
 
-        with UserValidator(user):
-            # do whatever you want with your valid model
+    with UserValidator(user):
+        # do whatever you want with your valid model
 
-    In this case the code inside ``with`` will be executed only if the validation succeed, otherwise a
-    ``ValidationException`` (containing a ``validation_result`` property with the appropriate report) is raised.
+In this case the code inside ``with`` will be executed only if the validation succeed, otherwise a
+``ValidationException`` (containing a ``validation_result`` property with the appropriate report) is raised.
         
 2. By invoking the ``validate()`` method (which returns a ``ValidationResult``)
 
-    .. code-block:: python
+.. code-block:: python
 
-        validation = UserValidator(user).validate()
-        if validation.is_successful():
-            # do whatever you want with your valid model
-        else:
-            # you can take a proper action and access validation.errors
-            # in order to provide a useful message to the application user,
-            # write logs or whatever
+    validation = UserValidator(user).validate()
+    if validation.is_successful():
+        # do whatever you want with your valid model
+    else:
+        # you can take a proper action and access validation.errors
+        # in order to provide a useful message to the application user,
+        # write logs or whatever
