@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 
+# current pyvaru version
+__version__ = '0.1.0'
+
 
 class ValidationRule(ABC):
     """
