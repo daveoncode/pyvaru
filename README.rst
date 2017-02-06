@@ -1,3 +1,10 @@
+.. image:: https://travis-ci.org/daveoncode/pyvaru.svg?branch=master
+    :target: https://travis-ci.org/daveoncode/pyvaru
+
+.. image:: https://codecov.io/gh/daveoncode/pyvaru/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/daveoncode/pyvaru
+
+
 What is pyvaru?
 ---------------
 
@@ -16,8 +23,8 @@ The library already offers a series of common validation rules like:
 - ``MaxValueRule`` (it checks that the target value is <= x) *
 - ``MinLengthRule`` (it checks that the target value length is >= x) *
 - ``MaxLengthRule`` (it checks that the target value length is <= x) *
-- ``RangeRule`` (it checks that the target value is contained in a given `range`) *
-- ``IntervalRule`` (it checks that the target value is contained in a given interval) *
+- ``RangeRule`` (it checks that the target value is contained in a given ``range``)
+- ``IntervalRule`` (it checks that the target value is contained in a given interval)
 - ``PatternRule`` (it checks that the target value matches a given regular expression)
 - ``PastDateRule`` (it checks that the target value is a date in the past)
 - ``FutureDateRule`` (it checks that the target value is a date in the future)
@@ -27,7 +34,13 @@ The library already offers a series of common validation rules like:
 \* where "x" is a provided reference value
 
 The developer is then free to create his custom rules by extending the abstract ``ValidationRule``
-and implementing the logic in the ``apply()`` method.
+and implementing the logic in the ``apply()`` method. For example:
+
+.. code-block:: python
+
+    class ContainsHelloRule(ValidationRule):
+        def apply(self) -> bool:
+            return 'hello' in self.apply_to
 
 These rules are then executed by a ``Validator``, which basically executes them in the provided
 order and eventually returns a ``ValidationResult`` containing the validation response.
@@ -73,19 +86,10 @@ validate we have to provide one or more proper rule(s).
                          valid_type=User,
                          error_message='User must be an instance of user model.',
                          stop_if_invalid=True),
-                FullStringRule(apply_to=user.first_name,
-                               label='First name',
-                               error_message='First name must be a valid string.'),
-                FullStringRule(apply_to=user.last_name,
-                               label='Last name',
-                               error_message='Last name must be a valid string.'),
-                ChoiceRule(apply_to=user.sex,
-                           label='Sex',
-                           choices=('M', 'F'),
-                           error_message='Sex must be "M" or "F".'),
-                PastDateRule(user.date_of_birth,
-                            label='Date of birth',
-                            error_message='Date of birth must be a past datetime object.')
+                FullStringRule(user.first_name, 'First name'),
+                FullStringRule(user.last_name, 'Last name'),
+                ChoiceRule(user.sex, 'Sex', choices=('M', 'F')),
+                PastDateRule(user.date_of_birth, 'Date of birth')
             ]
 
 Finally we have two choices regarding how to use our custom validator:
@@ -111,6 +115,29 @@ In this case the code inside ``with`` will be executed only if the validation su
         # you can take a proper action and access validation.errors
         # in order to provide a useful message to the application user,
         # write logs or whatever
+
+
+Assuming we have a instance of an User configured as the one below:
+
+.. code-block:: python
+
+    user = User(first_name=' ',
+                last_name=None,
+                date_of_birth=datetime(2020, 1, 1),
+                sex='unknown')
+
+
+By running a validation with the previous defined rules we will obtain a ``ValidationResult`` with the following errors:
+
+.. code-block:: python
+
+    {
+        'First name': ['String is empty.'],
+        'Last name': ['Not a string.'],
+        'Sex': ['Value not found in available choices.'],
+        'Date of birth': ['Not a past date.']
+    }
+
 
 Credits
 -------
