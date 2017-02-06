@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-with open('README', 'r') as readme:
+with open('README.rst', 'r') as readme:
     long_description = readme.read()
 
 setup(
@@ -36,5 +36,5 @@ setup(
     ],
     keywords='validation rule model data',
     packages=['pyvaru'],
-    data_files=[('README', ['README'])],
+    data_files=[('README.rst', ['README.rst'])],
 )
