@@ -8,6 +8,9 @@ from pyvaru.rules import TypeRule, FullStringRule, ChoiceRule, MinValueRule, Max
 CUSTOM_MESSAGE = 'custom message'
 
 
+# TODO: test rules against invalid object types
+
+
 class ValidationRuleTest(unittest.TestCase):
     def test_rule_cannot_be_instantiated_because_is_abstract(self):
         with self.assertRaises(TypeError):
@@ -27,7 +30,7 @@ class ValidatorTest(unittest.TestCase):
         validator = MyValidator({})
         result = validator.validate()
         self.assertIsInstance(result, ValidationResult)
-        self.assertTrue(result.valid)
+        self.assertTrue(result.is_successful())
         self.assertEqual(result.errors, {})
 
     def test_validate_returns_expected_result_if_rules_are_respected(self):
@@ -54,7 +57,7 @@ class ValidatorTest(unittest.TestCase):
 
         validator = MyValidator({'a': 20, 'b': 1, 'c': 'hello world'})
         result = validator.validate()
-        self.assertTrue(result.valid)
+        self.assertTrue(result.is_successful())
         self.assertEqual(result.errors, {})
 
     def test_validate_returns_expected_result_if_rules_are_not_respected(self):
@@ -83,7 +86,7 @@ class ValidatorTest(unittest.TestCase):
 
         validator = MyValidator({'a': 20, 'b': 1, 'c': 'hello world'})
         result = validator.validate()
-        self.assertFalse(result.valid)
+        self.assertFalse(result.is_successful())
         self.assertEqual(len(result.errors), 3)
         self.assertEqual(result.errors.get('Field A'), ['GtRule not respected!'])
         self.assertEqual(result.errors.get('Field B'), [ValidationRule.default_error_message])
@@ -118,7 +121,7 @@ class ValidatorTest(unittest.TestCase):
             with MyValidator({'a': 20, 'b': 1, 'c': 'hello world'}):
                 inner_code_calls += 1
 
-        errors = raise_context.exception.errors
+        errors = raise_context.exception.validation_result.errors
         self.assertEqual(inner_code_calls, 0)
         self.assertIsInstance(errors, dict)
         self.assertEqual(errors.get('Field A'), ['GtRule not respected!'])
@@ -169,7 +172,7 @@ class ValidatorTest(unittest.TestCase):
 
         validator = MyValidator({'a': 100})
         result = validator.validate()
-        self.assertFalse(result.valid)
+        self.assertFalse(result.is_successful())
         self.assertEqual(len(result.errors), 1)
         self.assertEqual(result.errors.get('Field A'), ['GtRuleFail', 'LtRuleFail'])
 
@@ -192,7 +195,7 @@ class ValidatorTest(unittest.TestCase):
 
         validator = MyValidator({'a': 100})
         result = validator.validate()
-        self.assertFalse(result.valid)
+        self.assertFalse(result.is_successful())
         self.assertEqual(len(result.errors), 1)
         self.assertEqual(result.errors.get('Field A'), ['GtRuleFail'])
 

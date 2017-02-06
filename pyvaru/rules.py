@@ -352,3 +352,8 @@ class PatternRule(ValidationRule):
     def apply(self) -> bool:
         string = self.apply_to  # type: str
         return re.match(self.pattern, string, self.flags) is not None
+
+
+# TODO: PastDateValidator
+# TODO: FutureDateValidator
+# TODO: UniqueItemsValidator

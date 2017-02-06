@@ -1,12 +1,6 @@
 from abc import ABC, abstractmethod
 
 
-class ValidationException(Exception):
-    def __init__(self, errors: dict, message: str = 'Data did not validate.'):
-        super().__init__(message)
-        self.errors = errors
-
-
 class ValidationRule(ABC):
     """
     Base abstract rule class from which concrete ones must inherit from.
@@ -63,15 +57,26 @@ class ValidationResult:
     """
     Represents a report of Validator's validate() call.
 
-    :param valid: True if the validation is successful, False otherwise.
-    :type valid: bool
     :param errors: Map containing errors descriptions (if one ore more get_rules are not respected)
     :type errors: dict
     """
 
-    def __init__(self, valid: bool = False, errors: dict = None):
-        self.valid = valid
+    def __init__(self, errors: dict = None):
         self.errors = errors or {}
+
+    def is_successful(self) -> bool:
+        """
+
+        :return: True if the validation is successful, False otherwise.
+        :rtype: bool
+        """
+        return len(self.errors) == 0
+
+
+class ValidationException(Exception):
+    def __init__(self, validation_result: ValidationResult, message: str = 'Data did not validate.'):
+        super().__init__(message)
+        self.validation_result = validation_result
 
 
 class Validator(ABC):
@@ -89,8 +94,8 @@ class Validator(ABC):
 
     def __enter__(self):
         validation = self.validate()
-        if not validation.valid:
-            raise ValidationException(validation.errors)
+        if not validation.is_successful():
+            raise ValidationException(validation)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -122,5 +127,4 @@ class Validator(ABC):
                 result.errors[rule.label].append(rule.get_error_message())
                 if rule.stop_if_invalid:
                     break
-        result.valid = len(result.errors) == 0
         return result
