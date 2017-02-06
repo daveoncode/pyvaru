@@ -1,6 +1,7 @@
 import re
 
 from pyvaru import ValidationRule
+from datetime import datetime
 
 
 class TypeRule(ValidationRule):
@@ -21,7 +22,7 @@ class TypeRule(ValidationRule):
     :type stop_if_invalid: bool
     """
 
-    #: Default error message for the rule (class attribute).
+    #: Default error message for the rule.
     default_error_message = 'Object is not an instance of the expected type.'
 
     def __init__(self,
@@ -53,7 +54,7 @@ class FullStringRule(ValidationRule):
     :type stop_if_invalid: bool
     """
 
-    #: Default error message for the rule (class attribute).
+    #: Default error message for the rule.
     default_error_message = 'String is empty.'
 
     #: Error message used if the value that is being validated is not a string.
@@ -89,7 +90,7 @@ class ChoiceRule(ValidationRule):
     :type stop_if_invalid: bool
     """
 
-    #: Default error message for the rule (class attribute).
+    #: Default error message for the rule.
     default_error_message = 'Value not found in available choices.'
 
     def __init__(self,
@@ -123,7 +124,7 @@ class MinValueRule(ValidationRule):
     :type stop_if_invalid: bool
     """
 
-    #: Default error message for the rule (class attribute).
+    #: Default error message for the rule.
     default_error_message = 'Value is smaller than expected one.'
 
     def __init__(self,
@@ -161,7 +162,7 @@ class MaxValueRule(ValidationRule):
     :type stop_if_invalid: bool
     """
 
-    #: Default error message for the rule (class attribute).
+    #: Default error message for the rule.
     default_error_message = 'Value is greater than expected one.'
 
     def __init__(self,
@@ -201,7 +202,7 @@ class MinLengthRule(ValidationRule):
     :type stop_if_invalid: bool
     """
 
-    #: Default error message for the rule (class attribute).
+    #: Default error message for the rule.
     default_error_message = 'Length is smaller than expected one.'
 
     def __init__(self,
@@ -242,7 +243,7 @@ class MaxLengthRule(ValidationRule):
     :type stop_if_invalid: bool
     """
 
-    #: Default error message for the rule (class attribute).
+    #: Default error message for the rule.
     default_error_message = 'Length is greater than expected one.'
 
     def __init__(self,
@@ -287,7 +288,7 @@ class RangeRule(ValidationRule):
     :type stop_if_invalid: bool
     """
 
-    #: Default error message for the rule (class attribute).
+    #: Default error message for the rule.
     default_error_message = 'Value is out of range.'
 
     def __init__(self,
@@ -323,7 +324,7 @@ class IntervalRule(ValidationRule):
     :type stop_if_invalid: bool
     """
 
-    #: Default error message for the rule (class attribute).
+    #: Default error message for the rule.
     default_error_message = 'Value is not in interval.'
 
     def __init__(self,
@@ -365,7 +366,7 @@ class PatternRule(ValidationRule):
     :type stop_if_invalid: bool
     """
 
-    #: Default error message for the rule (class attribute).
+    #: Default error message for the rule.
     default_error_message = 'Value does not match expected pattern.'
 
     #: Error message used if the value that is being validated is not a string.
@@ -390,6 +391,118 @@ class PatternRule(ValidationRule):
             self._type_error_occurred = True
             return False
 
-# TODO: PastDateValidator
-# TODO: FutureDateValidator
-# TODO: UniqueItemsValidator
+
+class PastDateRule(ValidationRule):
+    """
+    Ensure that the target value is a past date.
+
+    :param apply_to: Value against which the rule is applied.
+    :type apply_to: object
+    :param label: Short string describing the field that will be validated (e.g. "phone number", "user name"...). \
+    This string will be used as the key in the ValidationResult error dictionary.
+    :type label: str
+    :param reference_date: Date used for time checking (default to datetime.now()).
+    :type reference_date: datetime
+    :param error_message: Custom message that will be used instead of the "default_error_message".
+    :type error_message: str
+    :param stop_if_invalid: True to prevent Validator from processing the rest of the get_rules if the current one \
+    is not respected, False (default) to collect all the possible errors.
+    :type stop_if_invalid: bool
+    """
+
+    #: Default error message for the rule.
+    default_error_message = 'Not a past date.'
+
+    #: Error message used if the value that is being validated is not a date.
+    type_error_message = 'Not a date object.'
+
+    def __init__(self,
+                 apply_to: object,
+                 label: str,
+                 reference_date: datetime = None,
+                 error_message: str = None,
+                 stop_if_invalid: bool = False):
+        super().__init__(apply_to, label, error_message, stop_if_invalid)
+        self.reference_date = reference_date or datetime.now()
+
+    def apply(self) -> bool:
+        try:
+            return self.apply_to < self.reference_date
+        except TypeError:
+            self._type_error_occurred = True
+            return False
+
+
+class FutureDateRule(ValidationRule):
+    """
+    Ensure that the target value is a future date.
+
+    :param apply_to: Value against which the rule is applied.
+    :type apply_to: object
+    :param label: Short string describing the field that will be validated (e.g. "phone number", "user name"...). \
+    This string will be used as the key in the ValidationResult error dictionary.
+    :type label: str
+    :param reference_date: Date used for time checking (default to datetime.now()).
+    :type reference_date: datetime
+    :param error_message: Custom message that will be used instead of the "default_error_message".
+    :type error_message: str
+    :param stop_if_invalid: True to prevent Validator from processing the rest of the get_rules if the current one \
+    is not respected, False (default) to collect all the possible errors.
+    :type stop_if_invalid: bool
+    """
+
+    #: Default error message for the rule.
+    default_error_message = 'Not a future date.'
+
+    #: Error message used if the value that is being validated is not a date.
+    type_error_message = 'Not a date object.'
+
+    def __init__(self,
+                 apply_to: object,
+                 label: str,
+                 reference_date: datetime = None,
+                 error_message: str = None,
+                 stop_if_invalid: bool = False):
+        super().__init__(apply_to, label, error_message, stop_if_invalid)
+        self.reference_date = reference_date or datetime.now()
+
+    def apply(self) -> bool:
+        try:
+            return self.apply_to > self.reference_date
+        except TypeError:
+            self._type_error_occurred = True
+            return False
+
+
+class UniqueItemsRule(ValidationRule):
+    """
+    Ensure that the target list (or iterable) does not contain duplicated items.
+
+    :param apply_to: Value against which the rule is applied (can be any type).
+    :type apply_to: object
+    :param label: Short string describing the field that will be validated (e.g. "phone number", "user name"...). \
+    This string will be used as the key in the ValidationResult error dictionary.
+    :type label: str
+    :param error_message: Custom message that will be used instead of the "default_error_message".
+    :type error_message: str
+    :param stop_if_invalid: True to prevent Validator from processing the rest of the get_rules if the current one \
+    is not respected, False (default) to collect all the possible errors.
+    :type stop_if_invalid: bool
+    """
+
+    #: Default error message for the rule.
+    default_error_message = 'List contains duplicated items.'
+
+    #: Error message used if the value that is being validated is not an iterable one.
+    type_error_message = 'Not an iterable object.'
+
+    def __init__(self, apply_to: object, label: str, error_message: str = None, stop_if_invalid: bool = False):
+        super().__init__(apply_to, label, error_message, stop_if_invalid)
+
+    def apply(self) -> bool:
+        try:
+            # noinspection PyTypeChecker
+            return len(set(self.apply_to)) == len(self.apply_to)
+        except TypeError:
+            self._type_error_occurred = True
+            return False

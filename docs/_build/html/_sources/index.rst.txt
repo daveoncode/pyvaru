@@ -1,28 +1,14 @@
-.. pyvaru documentation master file, created by
-   sphinx-quickstart on Fri Feb  3 16:34:08 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+:orphan:
 
-pyvaru documentation
+Pyvaru documentation
 ====================
 
 .. toctree::
    :maxdepth: 5
 
-.. autosummary::
-   :toctree: _autosummary
+.. include:: ../README
 
-   pyvaru
-   pyvaru.rules
-
-
-.. automodule:: pyvaru
-    :members:
-    :inherited-members:
-
-.. automodule:: pyvaru.rules
-    :members:
-    :inherited-members:
+.. ref::`contents`
 
 
 Indices and tables

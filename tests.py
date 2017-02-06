@@ -1,11 +1,10 @@
 import re
 import unittest
-
 from datetime import datetime
 
 from pyvaru import ValidationRule, Validator, ValidationResult, ValidationException
 from pyvaru.rules import TypeRule, FullStringRule, ChoiceRule, MinValueRule, MaxValueRule, MinLengthRule, \
-    MaxLengthRule, RangeRule, PatternRule, IntervalRule
+    MaxLengthRule, RangeRule, PatternRule, IntervalRule, PastDateRule, FutureDateRule, UniqueItemsRule
 
 CUSTOM_MESSAGE = 'custom message'
 
@@ -487,6 +486,91 @@ class PatternRuleTest(unittest.TestCase):
         msg = 'custom message'
         rule = PatternRule('hello', 'label', pattern=r'[a-z]+', error_message=msg)
         self.assertEqual(rule.get_error_message(), msg)
+
+
+class PastDateRuleTest(unittest.TestCase):
+    def test_rule_returns_true_if_respected(self):
+        self.assertTrue(PastDateRule(datetime(2015, 1, 1), 'date', reference_date=datetime(2020, 1, 1)).apply())
+
+    def test_rule_returns_false_if_not_respected(self):
+        self.assertFalse(PastDateRule(datetime(2022, 1, 1), 'date', reference_date=datetime(2020, 1, 1)).apply())
+
+    def test_rule_returns_false_if_given_type_is_wrong(self):
+        self.assertFalse(PastDateRule('nope!', 'date', reference_date=datetime(2020, 1, 1)).apply())
+
+    def test_rule_changes_error_message_if_given_type_is_wrong(self):
+        rule = PastDateRule('nope!', 'date', reference_date=datetime(2020, 1, 1))
+        rule.apply()
+        self.assertEqual(rule.get_error_message(), PastDateRule.type_error_message)
+
+    def test_default_message_is_used_if_no_custom_provided(self):
+        rule = PastDateRule(datetime(2015, 1, 1), 'date', reference_date=datetime(2020, 1, 1))
+        self.assertEqual(rule.get_error_message(), PastDateRule.default_error_message)
+
+    def test_custom_message_used_if_provided(self):
+        rule = PastDateRule(datetime(2015, 1, 1),
+                            'date',
+                            reference_date=datetime(2020, 1, 1),
+                            error_message=CUSTOM_MESSAGE)
+        self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
+
+
+class FutureDateRuleTest(unittest.TestCase):
+    def test_rule_returns_true_if_respected(self):
+        self.assertTrue(FutureDateRule(datetime(2015, 1, 1), 'date', reference_date=datetime(2010, 1, 1)).apply())
+
+    def test_rule_returns_false_if_not_respected(self):
+        self.assertFalse(FutureDateRule(datetime(2000, 1, 1), 'date', reference_date=datetime(2020, 1, 1)).apply())
+
+    def test_rule_returns_false_if_given_type_is_wrong(self):
+        self.assertFalse(FutureDateRule('nope!', 'date', reference_date=datetime(2020, 1, 1)).apply())
+
+    def test_rule_changes_error_message_if_given_type_is_wrong(self):
+        rule = FutureDateRule('nope!', 'date', reference_date=datetime(2020, 1, 1))
+        rule.apply()
+        self.assertEqual(rule.get_error_message(), FutureDateRule.type_error_message)
+
+    def test_default_message_is_used_if_no_custom_provided(self):
+        rule = FutureDateRule(datetime(2015, 1, 1), 'date', reference_date=datetime(2020, 1, 1))
+        self.assertEqual(rule.get_error_message(), FutureDateRule.default_error_message)
+
+    def test_custom_message_used_if_provided(self):
+        rule = FutureDateRule(datetime(2015, 1, 1),
+                              'date',
+                              reference_date=datetime(2020, 1, 1),
+                              error_message=CUSTOM_MESSAGE)
+        self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
+
+
+class UniqueItemsRuleTest(unittest.TestCase):
+    def test_rule_returns_true_if_respected(self):
+        self.assertTrue(UniqueItemsRule(['one', 'two', 'three'], 'list').apply())
+        self.assertTrue(UniqueItemsRule(('one', 'two', 'three'), 'list').apply())
+        self.assertTrue(UniqueItemsRule('ABCDE', 'list').apply())
+        self.assertTrue(UniqueItemsRule({'a': 1}, 'list').apply())
+
+    def test_rule_returns_false_if_not_respected(self):
+        self.assertFalse(UniqueItemsRule(['one', 'two', 'three', 'one'], 'list').apply())
+        self.assertFalse(UniqueItemsRule(('one', 'one', 'two', 'three'), 'list').apply())
+        self.assertFalse(UniqueItemsRule('ABCDEA', 'list').apply())
+
+    def test_rule_returns_false_if_given_type_is_wrong(self):
+        self.assertFalse(UniqueItemsRule(42, 'list').apply())
+        self.assertFalse(UniqueItemsRule(True, 'list').apply())
+        self.assertFalse(UniqueItemsRule(datetime.now(), 'list').apply())
+
+    def test_rule_changes_error_message_if_given_type_is_wrong(self):
+        rule = UniqueItemsRule(42, 'list')
+        rule.apply()
+        self.assertEqual(rule.get_error_message(), UniqueItemsRule.type_error_message)
+
+    def test_default_message_is_used_if_no_custom_provided(self):
+        rule = UniqueItemsRule(['one', 'two', 'three'], 'list')
+        self.assertEqual(rule.get_error_message(), UniqueItemsRule.default_error_message)
+
+    def test_custom_message_used_if_provided(self):
+        rule = UniqueItemsRule(['one', 'two', 'three'], 'list', error_message=CUSTOM_MESSAGE)
+        self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
 
 
 if __name__ == '__main__':
