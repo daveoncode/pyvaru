@@ -3,6 +3,7 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
+# run tests
 script: python tests.py
 install:
   - pip install .
