@@ -20,6 +20,9 @@ class ValidationRule(ABC):
     #: Default error message for the rule (class attribute).
     default_error_message = 'Data is invalid.'
 
+    #: Error message used if the value that is being validated is not the expected type (TypeError exception).
+    type_error_message = 'Data type is invalid.'
+
     def __init__(self,
                  apply_to: object,
                  label: str,
@@ -29,6 +32,7 @@ class ValidationRule(ABC):
         self.label = label
         self.custom_error_message = error_message
         self.stop_if_invalid = stop_if_invalid
+        self._type_error_occurred = False
 
     def get_error_message(self) -> str:
         """
@@ -39,6 +43,8 @@ class ValidationRule(ABC):
         :return: Error message
         :rtype: str
         """
+        if self._type_error_occurred:
+            return self.type_error_message
         return self.custom_error_message or self.default_error_message
 
     @abstractmethod

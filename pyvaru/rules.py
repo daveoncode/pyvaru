@@ -54,11 +54,21 @@ class FullStringRule(ValidationRule):
     """
 
     #: Default error message for the rule (class attribute).
-    default_error_message = 'Invalid or empty string.'
+    default_error_message = 'String is empty.'
+
+    #: Error message used if the value that is being validated is not a string.
+    type_error_message = 'Not a string.'
+
+    def __init__(self, apply_to: object, label: str, error_message: str = None, stop_if_invalid: bool = False):
+        super().__init__(apply_to, label, error_message, stop_if_invalid)
 
     def apply(self):
         value = self.apply_to  # type: str
-        return isinstance(value, str) and len(value.strip()) > 0
+        if isinstance(value, str):
+            return len(value.strip()) > 0
+        else:
+            self._type_error_occurred = True
+            return False
 
 
 class ChoiceRule(ValidationRule):
@@ -126,7 +136,11 @@ class MinValueRule(ValidationRule):
         self.min_value = min_value
 
     def apply(self) -> bool:
-        return self.apply_to >= self.min_value
+        try:
+            return self.apply_to >= self.min_value
+        except TypeError:
+            self._type_error_occurred = True
+            return False
 
 
 class MaxValueRule(ValidationRule):
@@ -160,7 +174,11 @@ class MaxValueRule(ValidationRule):
         self.max_value = max_value
 
     def apply(self) -> bool:
-        return self.apply_to <= self.max_value
+        try:
+            return self.apply_to <= self.max_value
+        except TypeError:
+            self._type_error_occurred = True
+            return False
 
 
 class MinLengthRule(ValidationRule):
@@ -196,8 +214,12 @@ class MinLengthRule(ValidationRule):
         self.min_length = min_length
 
     def apply(self) -> bool:
-        # noinspection PyTypeChecker
-        return len(self.apply_to) >= self.min_length
+        try:
+            # noinspection PyTypeChecker
+            return len(self.apply_to) >= self.min_length
+        except TypeError:
+            self._type_error_occurred = True
+            return False
 
 
 class MaxLengthRule(ValidationRule):
@@ -233,8 +255,12 @@ class MaxLengthRule(ValidationRule):
         self.max_length = max_length
 
     def apply(self) -> bool:
-        # noinspection PyTypeChecker
-        return len(self.apply_to) <= self.max_length
+        try:
+            # noinspection PyTypeChecker
+            return len(self.apply_to) <= self.max_length
+        except TypeError:
+            self._type_error_occurred = True
+            return False
 
 
 class RangeRule(ValidationRule):
@@ -312,7 +338,11 @@ class IntervalRule(ValidationRule):
         self.interval_to = interval_to
 
     def apply(self) -> bool:
-        return self.interval_from <= self.apply_to <= self.interval_to
+        try:
+            return self.interval_from <= self.apply_to <= self.interval_to
+        except TypeError:
+            self._type_error_occurred = True
+            return False
 
 
 class PatternRule(ValidationRule):
@@ -338,6 +368,9 @@ class PatternRule(ValidationRule):
     #: Default error message for the rule (class attribute).
     default_error_message = 'Value does not match expected pattern.'
 
+    #: Error message used if the value that is being validated is not a string.
+    type_error_message = 'Not a string.'
+
     def __init__(self,
                  apply_to: object,
                  label: str,
@@ -351,8 +384,11 @@ class PatternRule(ValidationRule):
 
     def apply(self) -> bool:
         string = self.apply_to  # type: str
-        return re.match(self.pattern, string, self.flags) is not None
-
+        try:
+            return re.match(self.pattern, string, self.flags) is not None
+        except TypeError:
+            self._type_error_occurred = True
+            return False
 
 # TODO: PastDateValidator
 # TODO: FutureDateValidator

@@ -1,14 +1,13 @@
 import re
 import unittest
 
+from datetime import datetime
+
 from pyvaru import ValidationRule, Validator, ValidationResult, ValidationException
 from pyvaru.rules import TypeRule, FullStringRule, ChoiceRule, MinValueRule, MaxValueRule, MinLengthRule, \
     MaxLengthRule, RangeRule, PatternRule, IntervalRule
 
 CUSTOM_MESSAGE = 'custom message'
-
-
-# TODO: test rules against invalid object types
 
 
 class ValidationRuleTest(unittest.TestCase):
@@ -240,7 +239,16 @@ class FullStringRuleTest(unittest.TestCase):
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(FullStringRule('', 'label').apply())
         self.assertFalse(FullStringRule(' \n\n ', 'label').apply())
+
+    def test_rule_returns_false_if_given_type_is_wrong(self):
         self.assertFalse(FullStringRule(None, 'label').apply())
+        self.assertFalse(FullStringRule([1, 2, 3], 'label').apply())
+        self.assertFalse(FullStringRule(datetime.now(), 'label').apply())
+
+    def test_rule_changes_error_message_if_given_type_is_wrong(self):
+        rule = FullStringRule([1, 2, 3], 'label')
+        rule.apply()
+        self.assertEqual(rule.get_error_message(), FullStringRule.type_error_message)
 
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = FullStringRule('ciao', 'label')
@@ -258,6 +266,11 @@ class ChoiceRuleTest(unittest.TestCase):
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(ChoiceRule('D', 'label', choices=('A', 'B', 'C')).apply())
 
+    def test_rule_returns_false_if_given_type_is_wrong(self):
+        self.assertFalse(ChoiceRule({'a': 1}, 'label', choices=('A', 'B', 'C')).apply())
+        self.assertFalse(ChoiceRule(42, 'label', choices=('A', 'B', 'C')).apply())
+        self.assertFalse(ChoiceRule(True, 'label', choices=('A', 'B', 'C')).apply())
+
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = ChoiceRule('B', 'label', choices=('A', 'B', 'C'))
         self.assertEqual(rule.get_error_message(), ChoiceRule.default_error_message)
@@ -274,6 +287,16 @@ class MinValueRuleTest(unittest.TestCase):
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(MinValueRule(1, 'label', min_value=50).apply())
 
+    def test_rules_returns_false_if_the_given_type_is_wrong(self):
+        self.assertFalse(MinValueRule('ciao', 'label', min_value=50).apply())
+        self.assertFalse(MinValueRule({'a': 0}, 'label', min_value=50).apply())
+        self.assertFalse(MinValueRule([1, 2, 3], 'label', min_value=50).apply())
+
+    def test_rule_changes_error_message_if_the_given_type_is_wrong(self):
+        rule = MinValueRule([1, 2, 3], 'label', min_value=50)
+        rule.apply()
+        self.assertEqual(rule.get_error_message(), MinValueRule.type_error_message)
+
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = MinValueRule(100, 'label', min_value=50)
         self.assertEqual(rule.get_error_message(), MinValueRule.default_error_message)
@@ -289,6 +312,16 @@ class MaxValueRuleTest(unittest.TestCase):
 
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(MaxValueRule(1000, 'label', max_value=50).apply())
+
+    def test_rules_returns_false_if_the_given_type_is_wrong(self):
+        self.assertFalse(MaxValueRule('hello', 'label', max_value=50).apply())
+        self.assertFalse(MaxValueRule([1, 2, 3], 'label', max_value=50).apply())
+        self.assertFalse(MaxValueRule({'a': 'b'}, 'label', max_value=50).apply())
+
+    def test_rule_changes_error_message_if_the_given_type_is_wrong(self):
+        rule = MaxValueRule({'a': 'b'}, 'label', max_value=50)
+        rule.apply()
+        self.assertEqual(rule.get_error_message(), MaxValueRule.type_error_message)
 
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = MaxValueRule(10, 'label', max_value=50)
@@ -314,6 +347,15 @@ class MinLengthRuleTest(unittest.TestCase):
         self.assertFalse(MinLengthRule({'a': 1, 'b': 2, 'c': 3}, 'label', min_length=10).apply())
         self.assertFalse(MinLengthRule({'foo', 'bar', 'baz'}, 'label', min_length=10).apply())
 
+    def test_rules_returns_false_if_the_given_type_is_wrong(self):
+        self.assertFalse(MinLengthRule(5, 'label', min_length=10).apply())
+        self.assertFalse(MinLengthRule(datetime.now(), 'label', min_length=10).apply())
+
+    def test_rule_changes_error_message_if_the_given_type_is_wrong(self):
+        rule = MinLengthRule(5, 'label', min_length=10)
+        rule.apply()
+        self.assertEqual(rule.get_error_message(), MinLengthRule.type_error_message)
+
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = MinLengthRule('hello', 'label', min_length=10)
         self.assertEqual(rule.get_error_message(), MinLengthRule.default_error_message)
@@ -338,6 +380,15 @@ class MaxLengthRuleTest(unittest.TestCase):
         self.assertFalse(MaxLengthRule({'a': 1, 'b': 2, 'c': 3}, 'label', max_length=2).apply())
         self.assertFalse(MaxLengthRule({'foo', 'bar', 'baz'}, 'label', max_length=2).apply())
 
+    def test_rules_returns_false_if_the_given_type_is_wrong(self):
+        self.assertFalse(MaxLengthRule(8, 'label', max_length=2).apply())
+        self.assertFalse(MaxLengthRule(datetime.now(), 'label', max_length=2).apply())
+
+    def test_rule_changes_error_message_if_the_given_type_is_wrong(self):
+        rule = MaxLengthRule(8, 'label', max_length=2)
+        rule.apply()
+        self.assertEqual(rule.get_error_message(), MaxLengthRule.type_error_message)
+
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = MaxLengthRule('abc', 'label', max_length=3)
         self.assertEqual(rule.get_error_message(), MaxLengthRule.default_error_message)
@@ -358,6 +409,11 @@ class RangeRuleTest(unittest.TestCase):
 
     def test_floats_are_never_in_range(self):
         self.assertFalse(RangeRule(11.5, 'label', valid_range=range(10, 100)).apply())
+
+    def test_non_numeric_values_are_never_in_range(self):
+        self.assertFalse(RangeRule('hello', 'label', valid_range=range(10, 100)).apply())
+        self.assertFalse(RangeRule([1, 2, 3], 'label', valid_range=range(10, 100)).apply())
+        self.assertFalse(RangeRule(datetime.now(), 'label', valid_range=range(10, 100)).apply())
 
     def test_range_step_is_respected(self):
         # with default step of 1, value 22 is in range
@@ -382,6 +438,17 @@ class IntervalRuleTest(unittest.TestCase):
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(IntervalRule(9, interval_from=10, interval_to=50, label='label').apply())
         self.assertFalse(IntervalRule(51, interval_from=10, interval_to=50, label='label').apply())
+        self.assertFalse(IntervalRule('hello', interval_from=10, interval_to=50, label='label').apply())
+        self.assertFalse(IntervalRule([1, 2, 3], interval_from=10, interval_to=50, label='label').apply())
+
+    def test_rules_returns_false_if_the_given_type_is_wrong(self):
+        self.assertFalse(IntervalRule(datetime.now(), interval_from=10, interval_to=50, label='label').apply())
+        self.assertFalse(IntervalRule({'a': 123}, interval_from=10, interval_to=50, label='label').apply())
+
+    def test_rule_changes_error_message_if_the_given_type_is_wrong(self):
+        rule = IntervalRule({'a': 123}, interval_from=10, interval_to=50, label='label')
+        rule.apply()
+        self.assertEqual(rule.get_error_message(), IntervalRule.type_error_message)
 
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = IntervalRule(9, interval_from=10, interval_to=50, label='label')
@@ -401,6 +468,16 @@ class PatternRuleTest(unittest.TestCase):
         self.assertFalse(PatternRule('HELLO', 'label', pattern=r'^[a-z]+$').apply())
         self.assertFalse(PatternRule('599.99', 'label', pattern=r'^[a-z]+$').apply())
         self.assertFalse(PatternRule('', 'label', pattern=r'^[a-z]+$').apply())
+
+    def test_rule_returns_false_if_given_type_is_wrong(self):
+        self.assertFalse(PatternRule(42, 'label', pattern=r'^[a-z]+$').apply())
+        self.assertFalse(PatternRule([1, 2, 3], 'label', pattern=r'^[a-z]+$').apply())
+        self.assertFalse(PatternRule(datetime.now(), 'label', pattern=r'^[a-z]+$').apply())
+
+    def test_rule_changes_error_message_if_given_type_is_wrong(self):
+        rule = PatternRule([1, 2, 3], 'label', pattern=r'^[a-z]+$')
+        rule.apply()
+        self.assertEqual(rule.get_error_message(), PatternRule.type_error_message)
 
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = PatternRule('hello', 'label', pattern=r'[a-z]+')

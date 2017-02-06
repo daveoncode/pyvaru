@@ -150,20 +150,31 @@
 </table>
 <span class="target" id="module-pyvaru"></span><dl class="class">
 <dt id="pyvaru.ValidationResult">
-<em class="property">class </em><code class="descclassname">pyvaru.</code><code class="descname">ValidationResult</code><span class="sig-paren">(</span><em>valid: bool = False</em>, <em>errors: dict = None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.ValidationResult" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pyvaru.</code><code class="descname">ValidationResult</code><span class="sig-paren">(</span><em>errors: dict = None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyvaru.ValidationResult" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents a report of Validator&#8217;s validate() call.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>valid</strong> (<em>bool</em>) &#8211; True if the validation is successful, False otherwise.</li>
-<li><strong>errors</strong> (<em>dict</em>) &#8211; Map containing errors descriptions (if one ore more get_rules are not respected)</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>dict</em>) &#8211; Map containing errors descriptions (if one ore more get_rules are not respected)</td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="pyvaru.ValidationResult.is_successful">
+<code class="descname">is_successful</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; bool<a class="headerlink" href="#pyvaru.ValidationResult.is_successful" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if the validation is successful, False otherwise.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -223,6 +234,12 @@ otherwise the default one.</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyvaru.ValidationRule.type_error_message">
+<code class="descname">type_error_message</code><em class="property"> = 'Data type is invalid.'</em><a class="headerlink" href="#pyvaru.ValidationRule.type_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error message used if the value that is being validated is not the expected type (TypeError exception).</p>
 </dd></dl>
 
 </dd></dl>
@@ -341,7 +358,7 @@ otherwise the default one.</p>
 </table>
 <dl class="attribute">
 <dt id="pyvaru.rules.FullStringRule.default_error_message">
-<code class="descname">default_error_message</code><em class="property"> = 'Invalid or empty string.'</em><a class="headerlink" href="#pyvaru.rules.FullStringRule.default_error_message" title="Permalink to this definition">¶</a></dt>
+<code class="descname">default_error_message</code><em class="property"> = 'String is empty.'</em><a class="headerlink" href="#pyvaru.rules.FullStringRule.default_error_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default error message for the rule (class attribute).</p>
 </dd></dl>
 
@@ -361,6 +378,12 @@ otherwise the default one.</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyvaru.rules.FullStringRule.type_error_message">
+<code class="descname">type_error_message</code><em class="property"> = 'Not a string.'</em><a class="headerlink" href="#pyvaru.rules.FullStringRule.type_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error message used if the value that is being validated is not a string.</p>
 </dd></dl>
 
 </dd></dl>
@@ -637,6 +660,12 @@ otherwise the default one.</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyvaru.rules.PatternRule.type_error_message">
+<code class="descname">type_error_message</code><em class="property"> = 'Not a string.'</em><a class="headerlink" href="#pyvaru.rules.PatternRule.type_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error message used if the value that is being validated is not a string.</p>
 </dd></dl>
 
 </dd></dl>
