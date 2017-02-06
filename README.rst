@@ -139,6 +139,12 @@ By running a validation with the previous defined rules we will obtain a ``Valid
     }
 
 
+Full API Documentation
+----------------------
+
+Go to: http://pyvaru.readthedocs.io/en/latest/contents.html
+
+
 Credits
 -------
 
@@ -147,9 +153,3 @@ Pyvaru is developed and maintained by Davide Zanotti.
 Blog: http://www.daveoncode.com
 
 Twitter: https://twitter.com/daveoncode
-
-
-Full API Documentation
-----------------------
-
-Go to: http://pyvaru.readthedocs.io/en/latest/contents.html
