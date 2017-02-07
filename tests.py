@@ -197,6 +197,36 @@ class ValidatorTest(unittest.TestCase):
         self.assertEqual(len(result.errors), 1)
         self.assertEqual(result.errors.get('Field A'), ['GtRuleFail'])
 
+    def test_validator_handle_possible_exception_in_get_rules_as_expected(self):
+        class DangerValidator(Validator):
+            def get_rules(self) -> list:
+                return [
+                    FullStringRule(self.data.name, 'name')
+                ]
+
+        # normal test
+        validator = DangerValidator({'name': 'Dave'})
+        result = validator.validate()
+        self.assertFalse(result.is_successful())
+        self.assertEqual(len(result.errors), 1)
+        self.assertEqual(list(result.errors.keys()), ['Exception'])
+        self.assertIsInstance(result.errors.get('Exception'), list)
+        self.assertEqual(len(result.errors.get('Exception')), 1)
+        self.assertIsInstance(result.errors.get('Exception', [])[0], str)
+
+        # test as context processor
+        with self.assertRaises(ValidationException) as exception_context:
+            with DangerValidator({'name': 'Dave'}):
+                pass
+
+        exception_result = exception_context.exception.validation_result
+        self.assertFalse(exception_result.is_successful())
+        self.assertEqual(len(exception_result.errors), 1)
+        self.assertEqual(list(exception_result.errors.keys()), ['Exception'])
+        self.assertIsInstance(exception_result.errors.get('Exception'), list)
+        self.assertEqual(len(exception_result.errors.get('Exception')), 1)
+        self.assertIsInstance(exception_result.errors.get('Exception', [])[0], str)
+
 
 class TypeRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):

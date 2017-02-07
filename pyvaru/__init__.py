@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 # current pyvaru version
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 
 class ValidationRule(ABC):
@@ -73,8 +73,34 @@ class ValidationResult:
     def __init__(self, errors: dict = None):
         self.errors = errors or {}
 
+    def annotate_rule_violation(self, rule: ValidationRule) -> None:
+        """
+        Takes note of a rule validation failure by collecting its error message.
+
+        :param rule: Rule that failed validation.
+        :type rule: ValidationRule
+        :return: None
+        """
+        if self.errors.get(rule.label) is None:
+            self.errors[rule.label] = []
+        self.errors[rule.label].append(rule.get_error_message())
+
+    def annotate_exception(self, exception: Exception) -> None:
+        """
+        Takes note of an exception occurred during validation.
+        (Typically caused by an invalid attribute/key access inside get_rules() method)
+
+        :param exception: Exception catched during validate() phase.
+        :param exception: Exception
+        :return: None
+        """
+        if self.errors.get('Exception') is None:
+            self.errors['Exception'] = []
+        self.errors['Exception'].append(str(exception))
+
     def is_successful(self) -> bool:
         """
+        Checks that the validation result does not contain errors.
 
         :return: True if the validation is successful, False otherwise.
         :rtype: bool
@@ -139,11 +165,12 @@ class Validator(ABC):
         :rtype: ValidationResult
         """
         result = ValidationResult()
-        for rule in self.get_rules():
-            if not rule.apply():
-                if result.errors.get(rule.label) is None:
-                    result.errors[rule.label] = []
-                result.errors[rule.label].append(rule.get_error_message())
-                if rule.stop_if_invalid:
-                    break
+        try:
+            for rule in self.get_rules():
+                if not rule.apply():
+                    result.annotate_rule_violation(rule)
+                    if rule.stop_if_invalid:
+                        break
+        except (TypeError, KeyError, NameError, ValueError, AttributeError, IndexError) as e:
+            result.annotate_exception(e)
         return result
