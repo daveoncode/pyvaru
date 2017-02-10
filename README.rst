@@ -55,7 +55,7 @@ Installation
 Usage
 -----
     
-Given an existing model to validate, like the one above
+Given an existing model to validate, like the one below
 (but it could be a simple dictionary or any data structure since `pyvaru`
 does not make any assumption on the data format):
 
