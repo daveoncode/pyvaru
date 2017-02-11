@@ -1,7 +1,14 @@
 from abc import ABC, abstractmethod
 
-# current pyvaru version
+from inspect import isfunction
+
 __version__ = '0.1.1'
+__all__ = (
+    'ValidationRule',
+    'ValidationResult',
+    'ValidationException',
+    'Validator',
+)
 
 
 class ValidationRule(ABC):
@@ -31,11 +38,22 @@ class ValidationRule(ABC):
                  label: str,
                  error_message: str = None,
                  stop_if_invalid: bool = False):
-        self.apply_to = apply_to
+        self.__apply_to = apply_to
         self.label = label
         self.custom_error_message = error_message
         self.stop_if_invalid = stop_if_invalid
         self._type_error_occurred = False
+
+    @property
+    def apply_to(self) -> object:
+        if isfunction(self.__apply_to):
+            # noinspection PyCallingNonCallable
+            return self.__apply_to()
+        return self.__apply_to
+
+    @apply_to.setter
+    def apply_to(self, what: object):
+        self.__apply_to = what
 
     def get_error_message(self) -> str:
         """

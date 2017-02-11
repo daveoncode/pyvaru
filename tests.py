@@ -227,10 +227,57 @@ class ValidatorTest(unittest.TestCase):
         self.assertEqual(len(exception_result.errors.get('Exception')), 1)
         self.assertIsInstance(exception_result.errors.get('Exception', [])[0], str)
 
+    def test_without_lambdas_stop_if_invalid_does_not_prevent_errors_report(self):
+        """
+        Exception catched in get_rules() instead of the TypeRule violation we may expect, since the code is
+        executed as soon the method is called.
+        """
+
+        class MyModel:
+            name = 'Foo'
+
+        class DangerValidator(Validator):
+            def get_rules(self) -> list:
+                return [
+                    TypeRule(self.data, 'data', MyModel, stop_if_invalid=True),
+                    FullStringRule(self.data.name, 'name'),
+                ]
+
+        validator = DangerValidator({'name': 'Foo'})
+        result = validator.validate()
+        self.assertFalse(result.is_successful())
+        self.assertEqual(len(result.errors), 1)
+        self.assertEqual(list(result.errors.keys()), ['Exception'])
+
+    def test_by_using_lambda_and_stop_if_invalid_no_exception_is_reported(self):
+        """
+        No exception catched, since data access happens after get_rules() invocation, but stop_if_invalid prevents it.
+        """
+
+        class MyModel:
+            name = 'Foo'
+
+        class DangerValidator(Validator):
+            def get_rules(self) -> list:
+                return [
+                    TypeRule(lambda: self.data, 'data', MyModel, stop_if_invalid=True),
+                    FullStringRule(lambda: self.data.name, 'name'),
+                ]
+
+        validator = DangerValidator({'name': 'Foo'})
+        result = validator.validate()
+        self.assertFalse(result.is_successful())
+        self.assertEqual(len(result.errors), 1)
+        self.assertEqual(list(result.errors.keys()), ['data'])
+
 
 class TypeRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         rule = TypeRule({'a': 1, 'b': 2}, 'my_object', dict)
+        self.assertTrue(rule.apply())
+
+    def test_rule_supports_lambda_expressions(self):
+        rule = TypeRule(lambda: {'a': 1, 'b': 2}, 'my_object', dict)
         self.assertTrue(rule.apply())
 
     def test_rule_returns_true_if_type_is_a_subtype(self):
@@ -265,6 +312,9 @@ class FullStringRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(FullStringRule('ciao', 'label').apply())
 
+    def test_rule_supports_lambda_expressions(self):
+        self.assertTrue(FullStringRule(lambda: 'ciao', 'label').apply())
+
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(FullStringRule('', 'label').apply())
         self.assertFalse(FullStringRule(' \n\n ', 'label').apply())
@@ -292,6 +342,9 @@ class ChoiceRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(ChoiceRule('B', 'label', choices=('A', 'B', 'C')).apply())
 
+    def test_rule_supports_lambda_expressions(self):
+        self.assertTrue(ChoiceRule(lambda: 'B', 'label', choices=('A', 'B', 'C')).apply())
+
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(ChoiceRule('D', 'label', choices=('A', 'B', 'C')).apply())
 
@@ -312,6 +365,9 @@ class ChoiceRuleTest(unittest.TestCase):
 class MinValueRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(MinValueRule(100, 'label', min_value=50).apply())
+
+    def test_rule_supports_lambda_expressions(self):
+        self.assertTrue(MinValueRule(lambda: 100, 'label', min_value=50).apply())
 
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(MinValueRule(1, 'label', min_value=50).apply())
@@ -338,6 +394,9 @@ class MinValueRuleTest(unittest.TestCase):
 class MaxValueRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(MaxValueRule(10, 'label', max_value=50).apply())
+
+    def test_rule_supports_lambda_expressions(self):
+        self.assertTrue(MaxValueRule(lambda: 10, 'label', max_value=50).apply())
 
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(MaxValueRule(1000, 'label', max_value=50).apply())
@@ -368,6 +427,9 @@ class MinLengthRuleTest(unittest.TestCase):
         self.assertTrue(MinLengthRule(('foo', 'bar', 'baz'), 'label', min_length=3).apply())
         self.assertTrue(MinLengthRule({'a': 1, 'b': 2, 'c': 3}, 'label', min_length=3).apply())
         self.assertTrue(MinLengthRule({'foo', 'bar', 'baz'}, 'label', min_length=3).apply())
+
+    def test_rule_supports_lambda_expressions(self):
+        self.assertTrue(MinLengthRule(lambda: 'hello', 'label', min_length=3).apply())
 
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(MinLengthRule('hello', 'label', min_length=10).apply())
@@ -402,6 +464,9 @@ class MaxLengthRuleTest(unittest.TestCase):
         self.assertTrue(MaxLengthRule({'a': 1, 'b': 2, 'c': 3}, 'label', max_length=3).apply())
         self.assertTrue(MaxLengthRule({'foo', 'bar', 'baz'}, 'label', max_length=3).apply())
 
+    def test_rule_supports_lambda_expressions(self):
+        self.assertTrue(MaxLengthRule(lambda: 'abc', 'label', max_length=3).apply())
+
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(MaxLengthRule('abc', 'label', max_length=2).apply())
         self.assertFalse(MaxLengthRule(['foo', 'bar', 'baz'], 'label', max_length=2).apply())
@@ -431,6 +496,9 @@ class RangeRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(RangeRule(20, 'label', valid_range=range(10, 100)).apply())
         self.assertTrue(RangeRule(20, 'label', valid_range=range(100, 1, -1)).apply())
+
+    def test_rule_supports_lambda_expressions(self):
+        self.assertTrue(RangeRule(lambda: 20, 'label', valid_range=range(10, 100)).apply())
 
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(RangeRule(5, 'label', valid_range=range(10, 100)).apply())
@@ -464,6 +532,9 @@ class IntervalRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(IntervalRule(25, interval_from=10, interval_to=50, label='label').apply())
 
+    def test_rule_supports_lambda_expressions(self):
+        self.assertTrue(IntervalRule(lambda: 25, interval_from=10, interval_to=50, label='label').apply())
+
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(IntervalRule(9, interval_from=10, interval_to=50, label='label').apply())
         self.assertFalse(IntervalRule(51, interval_from=10, interval_to=50, label='label').apply())
@@ -492,6 +563,9 @@ class PatternRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(PatternRule('hello', 'label', pattern=r'^[a-z]+$').apply())
         self.assertTrue(PatternRule('HELLO', 'label', pattern=r'^[a-z]+$', flags=re.IGNORECASE).apply())
+
+    def test_rule_supports_lambda_expressions(self):
+        self.assertTrue(PatternRule(lambda: 'hello', 'label', pattern=r'^[a-z]+$').apply())
 
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(PatternRule('HELLO', 'label', pattern=r'^[a-z]+$').apply())
@@ -522,6 +596,10 @@ class PastDateRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(PastDateRule(datetime(2015, 1, 1), 'date', reference_date=datetime(2020, 1, 1)).apply())
 
+    def test_rule_supports_lambda_expressions(self):
+        rule = PastDateRule(lambda: datetime(2015, 1, 1), 'date', reference_date=datetime(2020, 1, 1))
+        self.assertTrue(rule.apply())
+
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(PastDateRule(datetime(2022, 1, 1), 'date', reference_date=datetime(2020, 1, 1)).apply())
 
@@ -548,6 +626,10 @@ class PastDateRuleTest(unittest.TestCase):
 class FutureDateRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(FutureDateRule(datetime(2015, 1, 1), 'date', reference_date=datetime(2010, 1, 1)).apply())
+
+    def test_rule_supports_lambda_expressions(self):
+        rule = FutureDateRule(lambda: datetime(2015, 1, 1), 'date', reference_date=datetime(2010, 1, 1))
+        self.assertTrue(rule.apply())
 
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(FutureDateRule(datetime(2000, 1, 1), 'date', reference_date=datetime(2020, 1, 1)).apply())
@@ -578,6 +660,9 @@ class UniqueItemsRuleTest(unittest.TestCase):
         self.assertTrue(UniqueItemsRule(('one', 'two', 'three'), 'list').apply())
         self.assertTrue(UniqueItemsRule('ABCDE', 'list').apply())
         self.assertTrue(UniqueItemsRule({'a': 1}, 'list').apply())
+
+    def test_rule_supports_lambda_expressions(self):
+        self.assertTrue(UniqueItemsRule(lambda: ['one', 'two', 'three'], 'list').apply())
 
     def test_rule_returns_false_if_not_respected(self):
         self.assertFalse(UniqueItemsRule(['one', 'two', 'three', 'one'], 'list').apply())
