@@ -655,19 +655,60 @@ class FutureDateRuleTest(unittest.TestCase):
 
 
 class UniqueItemsRuleTest(unittest.TestCase):
-    def test_rule_returns_true_if_respected(self):
-        self.assertTrue(UniqueItemsRule(['one', 'two', 'three'], 'list').apply())
-        self.assertTrue(UniqueItemsRule(('one', 'two', 'three'), 'list').apply())
-        self.assertTrue(UniqueItemsRule('ABCDE', 'list').apply())
-        self.assertTrue(UniqueItemsRule({'a': 1}, 'list').apply())
+    def test_rule_returns_always_true_for_sets(self):
+        self.assertTrue(UniqueItemsRule({'one', 'two', 'three'}, 'set_test').apply())
+        self.assertTrue(UniqueItemsRule({1, 1, 1, 1}, 'set_test').apply())
+        self.assertTrue(UniqueItemsRule(set(), 'list').apply())
+
+    def test_rule_returns_true_if_respected_with_lists(self):
+        self.assertTrue(UniqueItemsRule(['one', 'two', 'three'], 'list_test').apply())
+
+    def test_rule_returns_false_if_not_respected_with_lists(self):
+        self.assertFalse(UniqueItemsRule(['one', 'two', 'three', 'one'], 'list_test').apply())
+
+    def test_rule_returns_true_if_respected_with_tuples(self):
+        self.assertTrue(UniqueItemsRule(('one', 'two', 'three'), 'tuple_test').apply())
+
+    def test_rule_returns_false_if_not_respected_with_tuples(self):
+        self.assertFalse(UniqueItemsRule(('one', 'one', 'two', 'three'), 'tuple_test').apply())
+
+    def test_rule_returns_true_if_respected_with_strings(self):
+        self.assertTrue(UniqueItemsRule('ABCDE', 'string_test').apply())
+
+    def test_rule_returns_false_if_not_respected_with_strings(self):
+        self.assertFalse(UniqueItemsRule('ABCDEA', 'string_test').apply())
+
+    def test_rule_returns_true_if_respected_with_dictionaries(self):
+        self.assertTrue(UniqueItemsRule({'a': 1}, 'dict_test').apply())
+        self.assertTrue(UniqueItemsRule({'a': 1, 'b': 2}, 'dict_test').apply())
+        complex_data = {
+            'a': {
+                'x': 1,
+                'y': [1, 2, 3]
+            },
+            'b': {
+                'x': 1,
+                'y': [1, 2, 3, 4]
+            }
+        }
+        self.assertTrue(UniqueItemsRule(complex_data, 'dict_test').apply())
+
+    def test_rule_returns_false_if_not_respected_with_dictionaries(self):
+        self.assertFalse(UniqueItemsRule({'a': 1, 'b': 1}, 'dict_test').apply())
+        complex_data = {
+            'a': {
+                'x': 1,
+                'y': [1, 2, 3]
+            },
+            'b': {
+                'x': 1,
+                'y': [1, 2, 3]
+            }
+        }
+        self.assertFalse(UniqueItemsRule(complex_data, 'dict_test').apply())
 
     def test_rule_supports_lambda_expressions(self):
         self.assertTrue(UniqueItemsRule(lambda: ['one', 'two', 'three'], 'list').apply())
-
-    def test_rule_returns_false_if_not_respected(self):
-        self.assertFalse(UniqueItemsRule(['one', 'two', 'three', 'one'], 'list').apply())
-        self.assertFalse(UniqueItemsRule(('one', 'one', 'two', 'three'), 'list').apply())
-        self.assertFalse(UniqueItemsRule('ABCDEA', 'list').apply())
 
     def test_rule_returns_false_if_given_type_is_wrong(self):
         self.assertFalse(UniqueItemsRule(42, 'list').apply())

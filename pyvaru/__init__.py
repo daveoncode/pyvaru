@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from inspect import isfunction
 
-__version__ = '0.1.1'
+__version__ = '0.2.0'
 __all__ = (
     'ValidationRule',
     'ValidationResult',

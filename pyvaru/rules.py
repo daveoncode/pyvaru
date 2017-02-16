@@ -515,10 +515,28 @@ class UniqueItemsRule(ValidationRule):
     def __init__(self, apply_to: object, label: str, error_message: str = None, stop_if_invalid: bool = False):
         super().__init__(apply_to, label, error_message, stop_if_invalid)
 
-    def apply(self) -> bool:
+    def _dictionary_items_are_unique(self):
+        data = self.apply_to  # type: dict
+        values = list(data.values())
+        if len(values) > 1:
+            index = 1
+            while index < len(values):
+                if values[index - 1] == values[index]:
+                    return False
+                index += 1
+        return True
+
+    def _collection_items_are_unique(self):
         try:
             # noinspection PyTypeChecker
             return len(set(self.apply_to)) == len(self.apply_to)
         except TypeError:
             self._type_error_occurred = True
             return False
+
+    def apply(self) -> bool:
+        if isinstance(self.apply_to, dict):
+            return self._dictionary_items_are_unique()
+        if isinstance(self.apply_to, set):
+            return True
+        return self._collection_items_are_unique()
