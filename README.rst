@@ -86,10 +86,10 @@ validate we have to provide one or more proper rule(s).
                          valid_type=User,
                          error_message='User must be an instance of user model.',
                          stop_if_invalid=True),
-                FullStringRule(user.first_name, 'First name'),
-                FullStringRule(user.last_name, 'Last name'),
-                ChoiceRule(user.sex, 'Sex', choices=('M', 'F')),
-                PastDateRule(user.date_of_birth, 'Date of birth')
+                FullStringRule(lambda: user.first_name, 'First name'),
+                FullStringRule(lambda: user.last_name, 'Last name'),
+                ChoiceRule(lambda: user.sex, 'Sex', choices=('M', 'F')),
+                PastDateRule(lambda: user.date_of_birth, 'Date of birth')
             ]
 
 Finally we have two choices regarding how to use our custom validator:
