@@ -51,10 +51,6 @@ class ValidationRule(ABC):
             return self.__apply_to()
         return self.__apply_to
 
-    @apply_to.setter
-    def apply_to(self, what: object):
-        self.__apply_to = what
-
     def get_error_message(self) -> str:
         """
         Returns the message that will be used by the validator if the rule is not respected.
@@ -78,6 +74,16 @@ class ValidationRule(ABC):
         :rtype: bool
         """
         pass  # pragma: no cover
+
+    def __invert__(self):
+        def inverted_apply(apply):
+            def decorated_function():
+                return not apply()
+
+            return decorated_function
+
+        self.apply = inverted_apply(self.apply)
+        return self
 
 
 class ValidationResult:

@@ -307,6 +307,17 @@ class TypeRuleTest(unittest.TestCase):
         rule = TypeRule({}, 'my_object', dict, CUSTOM_MESSAGE)
         self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
 
+    # bitwise operators
+
+    def test_rule_can_be_negated_with_bitwise_inversion(self):
+        # since negated, fails because type is right:
+        negated_rule = ~ TypeRule({'a': 1, 'b': 2}, 'my_object', dict)
+        self.assertFalse(negated_rule.apply())
+
+        # since negated, pass because type is wrong:
+        negated_rule_2 = ~ TypeRule('banana', 'my_object', dict)
+        self.assertTrue(negated_rule_2.apply())
+
 
 class FullStringRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
@@ -337,6 +348,17 @@ class FullStringRuleTest(unittest.TestCase):
         rule = FullStringRule('ciao', 'label', CUSTOM_MESSAGE)
         self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
 
+    # bitwise operators
+
+    def test_rule_can_be_negated_with_bitwise_inversion(self):
+        # since negated, fails because the string has content
+        negated_rule = ~ FullStringRule('ciao', 'label')
+        self.assertFalse(negated_rule.apply())
+
+        # since negated, pass because the string is empty
+        negated_rule = ~ FullStringRule('', 'label')
+        self.assertTrue(negated_rule.apply())
+
 
 class ChoiceRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
@@ -360,6 +382,17 @@ class ChoiceRuleTest(unittest.TestCase):
     def test_custom_message_used_if_provided(self):
         rule = ChoiceRule('B', 'label', choices=('A', 'B', 'C'), error_message=CUSTOM_MESSAGE)
         self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
+
+    # bitwise operators
+
+    def test_rule_can_be_negated_with_bitwise_inversion(self):
+        # since negated, fails because "B" is in available options:
+        negated_rule = ~ ChoiceRule('B', 'label', choices=('A', 'B', 'C'))
+        self.assertFalse(negated_rule.apply())
+
+        # since negated, pass because type "Z" is not in available options:
+        negated_rule_2 = ~ ChoiceRule('Z', 'label', choices=('A', 'B', 'C'))
+        self.assertTrue(negated_rule_2.apply())
 
 
 class MinValueRuleTest(unittest.TestCase):
@@ -390,6 +423,21 @@ class MinValueRuleTest(unittest.TestCase):
         rule = MinValueRule(100, 'label', min_value=50, error_message=CUSTOM_MESSAGE)
         self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
 
+    # bitwise operators
+
+    def test_rule_can_be_negated_with_bitwise_inversion(self):
+        # since negated, fails because 100 is > 50
+        negated_rule = ~ MinValueRule(100, 'label', min_value=50)
+        self.assertFalse(negated_rule.apply())
+
+        # since negated, pass because 10 is < 50
+        negated_rule_2 = ~ MinValueRule(10, 'label', min_value=50)
+        self.assertTrue(negated_rule_2.apply())
+
+        # since negated, pass because 50 == 50
+        negated_rule_3 = ~ MinValueRule(50, 'label', min_value=50)
+        self.assertFalse(negated_rule_3.apply())
+
 
 class MaxValueRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
@@ -418,6 +466,21 @@ class MaxValueRuleTest(unittest.TestCase):
     def test_custom_message_used_if_provided(self):
         rule = MaxValueRule(10, 'label', max_value=50, error_message=CUSTOM_MESSAGE)
         self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
+
+    # bitwise operators
+
+    def test_rule_can_be_negated_with_bitwise_inversion(self):
+        # since negated, fails because 10 is < 50
+        negated_rule = ~ MaxValueRule(10, 'label', max_value=50)
+        self.assertFalse(negated_rule.apply())
+
+        # since negated, pass because 100 is > 50
+        negated_rule_2 = ~ MaxValueRule(100, 'label', max_value=50)
+        self.assertTrue(negated_rule_2.apply())
+
+        # since negated, pass because 50 == 50
+        negated_rule_3 = ~ MaxValueRule(50, 'label', max_value=50)
+        self.assertFalse(negated_rule_3.apply())
 
 
 class MinLengthRuleTest(unittest.TestCase):
@@ -455,6 +518,21 @@ class MinLengthRuleTest(unittest.TestCase):
         rule = MinLengthRule('hello', 'label', min_length=10, error_message=CUSTOM_MESSAGE)
         self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
 
+    # bitwise operators
+
+    def test_rule_can_be_negated_with_bitwise_inversion(self):
+        # since negated, fails because len('abcde') > 3
+        negated_rule = ~ MinLengthRule('abcde', 'label', min_length=3)
+        self.assertFalse(negated_rule.apply())
+
+        # since negated, pass because len('a') is < 3
+        negated_rule_2 = ~ MinLengthRule('a', 'label', min_length=3)
+        self.assertTrue(negated_rule_2.apply())
+
+        # since negated, pass because same length
+        negated_rule_3 = ~ MinLengthRule('abc', 'label', min_length=3)
+        self.assertFalse(negated_rule_3.apply())
+
 
 class MaxLengthRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
@@ -490,6 +568,21 @@ class MaxLengthRuleTest(unittest.TestCase):
     def test_custom_message_used_if_provided(self):
         rule = MaxLengthRule('abc', 'label', max_length=3, error_message=CUSTOM_MESSAGE)
         self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
+
+    # bitwise operators
+
+    def test_rule_can_be_negated_with_bitwise_inversion(self):
+        # since negated, fails because len('abcde') < 3
+        negated_rule = ~ MaxLengthRule('a', 'label', max_length=3)
+        self.assertFalse(negated_rule.apply())
+
+        # since negated, pass because len('abcde') is > 3
+        negated_rule_2 = ~ MaxLengthRule('abcde', 'label', max_length=3)
+        self.assertTrue(negated_rule_2.apply())
+
+        # since negated, pass because same length
+        negated_rule_3 = ~ MaxLengthRule('abc', 'label', max_length=3)
+        self.assertFalse(negated_rule_3.apply())
 
 
 class RangeRuleTest(unittest.TestCase):
@@ -527,6 +620,17 @@ class RangeRuleTest(unittest.TestCase):
         rule = RangeRule(20, 'label', valid_range=range(10, 100), error_message=msg)
         self.assertEqual(rule.get_error_message(), msg)
 
+    # bitwise operators
+
+    def test_rule_can_be_negated_with_bitwise_inversion(self):
+        # since negated, fails because 22 is in range
+        negated_rule = ~ RangeRule(22, 'label', valid_range=range(10, 100))
+        self.assertFalse(negated_rule.apply())
+
+        # since negated, pass because 500 is not in range
+        negated_rule_2 = ~ RangeRule(500, 'label', valid_range=range(10, 100))
+        self.assertTrue(negated_rule_2.apply())
+
 
 class IntervalRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
@@ -557,6 +661,17 @@ class IntervalRuleTest(unittest.TestCase):
     def test_custom_message_used_if_provided(self):
         rule = IntervalRule(9, interval_from=10, interval_to=50, label='label', error_message=CUSTOM_MESSAGE)
         self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
+
+    # bitwise operators
+
+    def test_rule_can_be_negated_with_bitwise_inversion(self):
+        # since negated, fails because 25 is in the interval
+        negated_rule = ~ IntervalRule(25, interval_from=10, interval_to=50, label='label')
+        self.assertFalse(negated_rule.apply())
+
+        # since negated, pass because 200 is not in the interval
+        negated_rule = ~ IntervalRule(200, interval_from=10, interval_to=50, label='label')
+        self.assertTrue(negated_rule.apply())
 
 
 class PatternRuleTest(unittest.TestCase):
@@ -591,6 +706,17 @@ class PatternRuleTest(unittest.TestCase):
         rule = PatternRule('hello', 'label', pattern=r'[a-z]+', error_message=msg)
         self.assertEqual(rule.get_error_message(), msg)
 
+    # bitwise operators
+
+    def test_rule_can_be_negated_with_bitwise_inversion(self):
+        # since negated, fails because pattern is matched
+        negated_rule = ~ PatternRule('hello', 'label', pattern=r'^[a-z]+$')
+        self.assertFalse(negated_rule.apply())
+
+        # since negated, pass because pattern is not matched
+        negated_rule_2 = ~ PatternRule('213', 'label', pattern=r'^[a-z]+$')
+        self.assertTrue(negated_rule_2.apply())
+
 
 class PastDateRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
@@ -622,6 +748,17 @@ class PastDateRuleTest(unittest.TestCase):
                             error_message=CUSTOM_MESSAGE)
         self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
 
+    # bitwise operators
+
+    def test_rule_can_be_negated_with_bitwise_inversion(self):
+        # since negated, fail because date is in the past
+        negated_rule = ~ PastDateRule(datetime(2015, 1, 1), 'date', reference_date=datetime(2020, 1, 1))
+        self.assertFalse(negated_rule.apply())
+
+        # since negated, pass because date is not in the past
+        negated_rule_2 = ~ PastDateRule(datetime(2030, 1, 1), 'date', reference_date=datetime(2020, 1, 1))
+        self.assertTrue(negated_rule_2.apply())
+
 
 class FutureDateRuleTest(unittest.TestCase):
     def test_rule_returns_true_if_respected(self):
@@ -652,6 +789,17 @@ class FutureDateRuleTest(unittest.TestCase):
                               reference_date=datetime(2020, 1, 1),
                               error_message=CUSTOM_MESSAGE)
         self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
+
+    # bitwise operators
+
+    def test_rule_can_be_negated_with_bitwise_inversion(self):
+        # since negated, fail because date is in the future
+        negated_rule = ~ FutureDateRule(datetime(2055, 1, 1), 'date', reference_date=datetime(2020, 1, 1))
+        self.assertFalse(negated_rule.apply())
+
+        # since negated, pass because date is not in the future
+        negated_rule_2 = ~ FutureDateRule(datetime(1999, 1, 1), 'date', reference_date=datetime(2020, 1, 1))
+        self.assertTrue(negated_rule_2.apply())
 
 
 class UniqueItemsRuleTest(unittest.TestCase):
@@ -727,6 +875,17 @@ class UniqueItemsRuleTest(unittest.TestCase):
     def test_custom_message_used_if_provided(self):
         rule = UniqueItemsRule(['one', 'two', 'three'], 'list', error_message=CUSTOM_MESSAGE)
         self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
+
+    # bitwise operators
+
+    def test_rule_can_be_negated_with_bitwise_inversion(self):
+        # since negated, fails because the list does not contain duplicated items
+        negated_rule = ~ UniqueItemsRule(['one', 'two', 'three'], 'list_test')
+        self.assertFalse(negated_rule.apply())
+
+        # since negated, pass because the list contains duplicated items
+        negated_rule = ~ UniqueItemsRule(['one', 'two', 'three', 'one'], 'list_test')
+        self.assertTrue(negated_rule.apply())
 
 
 if __name__ == '__main__':
