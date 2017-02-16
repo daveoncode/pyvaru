@@ -2,7 +2,7 @@
 
 ## v0.2.0
 
-### Improvement:
+### Improvements:
 - ValidationRule's apply_to parameter can now be passed as a lambda expression
 
 ### Fixes:
@@ -10,7 +10,7 @@
 
 ## v0.1.1
 
-### Improvement:
+### Improvements:
 - Attribute/Key/Index errors that may occur in the Validator's get_rules() method are now catched in validate()
 implementation and the error properly reported in the ValidationResult
 
