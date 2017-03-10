@@ -1,4 +1,6 @@
+import pprint
 from abc import ABC, abstractmethod
+from enum import Enum
 
 from inspect import isfunction
 
@@ -8,7 +10,15 @@ __all__ = (
     'ValidationResult',
     'ValidationException',
     'Validator',
+    'JoinType',
 )
+
+
+class JoinType(Enum):
+    AND = 1
+    OR = 2
+    XOR = 3
+    NOT = 4
 
 
 class ValidationRule(ABC):
@@ -131,6 +141,11 @@ class ValidationResult:
         """
         return len(self.errors) == 0
 
+    def __str__(self):
+        info = {'errors': self.errors or {}}
+        formatted_string = pprint.pformat(info)
+        return formatted_string
+
 
 class ValidationException(Exception):
     """
@@ -145,7 +160,13 @@ class ValidationException(Exception):
 
     def __init__(self, validation_result: ValidationResult, message: str = 'Data did not validate.'):
         super().__init__(message)
+        self.message = message
         self.validation_result = validation_result
+
+    def __str__(self):
+        info = {'message': self.message, 'errors': self.validation_result.errors}
+        formatted_string = pprint.pformat(info)
+        return formatted_string
 
 
 class Validator(ABC):

@@ -1,5 +1,7 @@
+import pprint
 import re
-import unittest
+from unittest import TestCase
+from unittest import main as run_tests
 from datetime import datetime
 
 from pyvaru import ValidationRule, Validator, ValidationResult, ValidationException
@@ -9,13 +11,39 @@ from pyvaru.rules import TypeRule, FullStringRule, ChoiceRule, MinValueRule, Max
 CUSTOM_MESSAGE = 'custom message'
 
 
-class ValidationRuleTest(unittest.TestCase):
+class ValidationRuleTest(TestCase):
     def test_rule_cannot_be_instantiated_because_is_abstract(self):
         with self.assertRaises(TypeError):
             ValidationRule('', 'test')
 
 
-class ValidatorTest(unittest.TestCase):
+class ValidationResultTest(TestCase):
+    def test_string_conversion_returns_formatted_string_with_errors(self):
+        errors = {
+            'first_name': FullStringRule.default_error_message,
+            'last_name': FullStringRule.default_error_message,
+        }
+        result = ValidationResult(errors)
+        self.assertEqual(str(result), pprint.pformat({'errors': errors}))
+
+    def test_string_conversion_returns_formatted_string_without_errors(self):
+        result = ValidationResult()
+        self.assertEqual(str(result), pprint.pformat({'errors': {}}))
+
+
+class ValidationExceptionTest(TestCase):
+    def test_string_conversion_returns_formatted_string_with_errors(self):
+        errors = {
+            'first_name': FullStringRule.default_error_message,
+            'last_name': FullStringRule.default_error_message,
+        }
+        result = ValidationResult(errors)
+        exception = ValidationException(result)
+        expected_string = pprint.pformat({'message': exception.message, 'errors': result.errors})
+        self.assertEqual(str(exception), expected_string)
+
+
+class ValidatorTest(TestCase):
     def test_validator_cannot_be_instantiated_because_is_abstract(self):
         with self.assertRaises(TypeError):
             Validator({})
@@ -271,7 +299,7 @@ class ValidatorTest(unittest.TestCase):
         self.assertEqual(list(result.errors.keys()), ['data'])
 
 
-class TypeRuleTest(unittest.TestCase):
+class TypeRuleTest(TestCase):
     def test_rule_returns_true_if_respected(self):
         rule = TypeRule({'a': 1, 'b': 2}, 'my_object', dict)
         self.assertTrue(rule.apply())
@@ -319,7 +347,7 @@ class TypeRuleTest(unittest.TestCase):
         self.assertTrue(negated_rule_2.apply())
 
 
-class FullStringRuleTest(unittest.TestCase):
+class FullStringRuleTest(TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(FullStringRule('ciao', 'label').apply())
 
@@ -360,7 +388,7 @@ class FullStringRuleTest(unittest.TestCase):
         self.assertTrue(negated_rule.apply())
 
 
-class ChoiceRuleTest(unittest.TestCase):
+class ChoiceRuleTest(TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(ChoiceRule('B', 'label', choices=('A', 'B', 'C')).apply())
 
@@ -395,7 +423,7 @@ class ChoiceRuleTest(unittest.TestCase):
         self.assertTrue(negated_rule_2.apply())
 
 
-class MinValueRuleTest(unittest.TestCase):
+class MinValueRuleTest(TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(MinValueRule(100, 'label', min_value=50).apply())
 
@@ -439,7 +467,7 @@ class MinValueRuleTest(unittest.TestCase):
         self.assertFalse(negated_rule_3.apply())
 
 
-class MaxValueRuleTest(unittest.TestCase):
+class MaxValueRuleTest(TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(MaxValueRule(10, 'label', max_value=50).apply())
 
@@ -483,7 +511,7 @@ class MaxValueRuleTest(unittest.TestCase):
         self.assertFalse(negated_rule_3.apply())
 
 
-class MinLengthRuleTest(unittest.TestCase):
+class MinLengthRuleTest(TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(MinLengthRule('hello', 'label', min_length=3).apply())
         self.assertTrue(MinLengthRule(['foo', 'bar', 'baz'], 'label', min_length=3).apply())
@@ -534,7 +562,7 @@ class MinLengthRuleTest(unittest.TestCase):
         self.assertFalse(negated_rule_3.apply())
 
 
-class MaxLengthRuleTest(unittest.TestCase):
+class MaxLengthRuleTest(TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(MaxLengthRule('abc', 'label', max_length=3).apply())
         self.assertTrue(MaxLengthRule(['foo', 'bar', 'baz'], 'label', max_length=3).apply())
@@ -585,7 +613,7 @@ class MaxLengthRuleTest(unittest.TestCase):
         self.assertFalse(negated_rule_3.apply())
 
 
-class RangeRuleTest(unittest.TestCase):
+class RangeRuleTest(TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(RangeRule(20, 'label', valid_range=range(10, 100)).apply())
         self.assertTrue(RangeRule(20, 'label', valid_range=range(100, 1, -1)).apply())
@@ -632,7 +660,7 @@ class RangeRuleTest(unittest.TestCase):
         self.assertTrue(negated_rule_2.apply())
 
 
-class IntervalRuleTest(unittest.TestCase):
+class IntervalRuleTest(TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(IntervalRule(25, interval_from=10, interval_to=50, label='label').apply())
 
@@ -674,7 +702,7 @@ class IntervalRuleTest(unittest.TestCase):
         self.assertTrue(negated_rule.apply())
 
 
-class PatternRuleTest(unittest.TestCase):
+class PatternRuleTest(TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(PatternRule('hello', 'label', pattern=r'^[a-z]+$').apply())
         self.assertTrue(PatternRule('HELLO', 'label', pattern=r'^[a-z]+$', flags=re.IGNORECASE).apply())
@@ -718,7 +746,7 @@ class PatternRuleTest(unittest.TestCase):
         self.assertTrue(negated_rule_2.apply())
 
 
-class PastDateRuleTest(unittest.TestCase):
+class PastDateRuleTest(TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(PastDateRule(datetime(2015, 1, 1), 'date', reference_date=datetime(2020, 1, 1)).apply())
 
@@ -760,7 +788,7 @@ class PastDateRuleTest(unittest.TestCase):
         self.assertTrue(negated_rule_2.apply())
 
 
-class FutureDateRuleTest(unittest.TestCase):
+class FutureDateRuleTest(TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(FutureDateRule(datetime(2015, 1, 1), 'date', reference_date=datetime(2010, 1, 1)).apply())
 
@@ -802,7 +830,7 @@ class FutureDateRuleTest(unittest.TestCase):
         self.assertTrue(negated_rule_2.apply())
 
 
-class UniqueItemsRuleTest(unittest.TestCase):
+class UniqueItemsRuleTest(TestCase):
     def test_rule_returns_always_true_for_sets(self):
         self.assertTrue(UniqueItemsRule({'one', 'two', 'three'}, 'set_test').apply())
         self.assertTrue(UniqueItemsRule({1, 1, 1, 1}, 'set_test').apply())
@@ -889,4 +917,4 @@ class UniqueItemsRuleTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main(verbosity=2)
+    run_tests(verbosity=2)
