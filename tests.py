@@ -1,8 +1,8 @@
 import pprint
 import re
+from datetime import datetime
 from unittest import TestCase
 from unittest import main as run_tests
-from datetime import datetime
 
 from pyvaru import ValidationRule, Validator, ValidationResult, ValidationException
 from pyvaru.rules import TypeRule, FullStringRule, ChoiceRule, MinValueRule, MaxValueRule, MinLengthRule, \
@@ -58,6 +58,7 @@ class ValidatorTest(TestCase):
         self.assertIsInstance(result, ValidationResult)
         self.assertTrue(result.is_successful())
         self.assertEqual(result.errors, {})
+        self.assertEqual(str(result), "{'errors': {}}")
 
     def test_validate_returns_expected_result_if_rules_are_respected(self):
         class GtRule(ValidationRule):
@@ -85,6 +86,7 @@ class ValidatorTest(TestCase):
         result = validator.validate()
         self.assertTrue(result.is_successful())
         self.assertEqual(result.errors, {})
+        self.assertEqual(str(result), "{'errors': {}}")
 
     def test_validate_returns_expected_result_if_rules_are_not_respected(self):
         class GtRule(ValidationRule):
@@ -117,6 +119,7 @@ class ValidatorTest(TestCase):
         self.assertEqual(result.errors.get('Field A'), ['GtRule not respected!'])
         self.assertEqual(result.errors.get('Field B'), [ValidationRule.default_error_message])
         self.assertEqual(result.errors.get('Field C'), [ContainsRule.default_error_message])
+        self.assertEqual(str(result), pprint.pformat({'errors': result.errors}))
 
     def test_validator_as_context_processor_with_failures(self):
         class GtRule(ValidationRule):
@@ -153,6 +156,8 @@ class ValidatorTest(TestCase):
         self.assertEqual(errors.get('Field A'), ['GtRule not respected!'])
         self.assertEqual(errors.get('Field B'), [ValidationRule.default_error_message])
         self.assertEqual(errors.get('Field C'), [ContainsRule.default_error_message])
+        expected_string_value = pprint.pformat({'message': raise_context.exception.message, 'errors': errors})
+        self.assertEqual(str(raise_context.exception), expected_string_value)
 
     def test_validator_as_context_processor_without_failures(self):
         class GtRule(ValidationRule):
