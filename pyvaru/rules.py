@@ -19,6 +19,8 @@ __all__ = (
     'UniqueItemsRule',
 )
 
+DATA_ERRORS = (TypeError, IndexError, KeyError, NameError, ValueError, AttributeError)
+
 
 class TypeRule(ValidationRule):
     """
@@ -73,19 +75,12 @@ class FullStringRule(ValidationRule):
     #: Default error message for the rule.
     default_error_message = 'String is empty.'
 
-    #: Error message used if the value that is being validated is not a string.
-    type_error_message = 'Not a string.'
-
     def __init__(self, apply_to: object, label: str, error_message: str = None, stop_if_invalid: bool = False):
         super().__init__(apply_to, label, error_message, stop_if_invalid)
 
     def apply(self):
         value = self.apply_to  # type: str
-        if isinstance(value, str):
-            return len(value.strip()) > 0
-        else:
-            self._type_error_occurred = True
-            return False
+        return isinstance(value, str) and len(value.strip()) > 0
 
 
 class ChoiceRule(ValidationRule):
@@ -119,7 +114,10 @@ class ChoiceRule(ValidationRule):
         self.choices = choices
 
     def apply(self) -> bool:
-        return self.apply_to in self.choices
+        try:
+            return self.apply_to in self.choices
+        except DATA_ERRORS:
+            return False
 
 
 class MinValueRule(ValidationRule):
@@ -155,8 +153,7 @@ class MinValueRule(ValidationRule):
     def apply(self) -> bool:
         try:
             return self.apply_to >= self.min_value
-        except TypeError:
-            self._type_error_occurred = True
+        except DATA_ERRORS:
             return False
 
 
@@ -193,8 +190,7 @@ class MaxValueRule(ValidationRule):
     def apply(self) -> bool:
         try:
             return self.apply_to <= self.max_value
-        except TypeError:
-            self._type_error_occurred = True
+        except DATA_ERRORS:
             return False
 
 
@@ -234,8 +230,7 @@ class MinLengthRule(ValidationRule):
         try:
             # noinspection PyTypeChecker
             return len(self.apply_to) >= self.min_length
-        except TypeError:
-            self._type_error_occurred = True
+        except DATA_ERRORS:
             return False
 
 
@@ -275,8 +270,7 @@ class MaxLengthRule(ValidationRule):
         try:
             # noinspection PyTypeChecker
             return len(self.apply_to) <= self.max_length
-        except TypeError:
-            self._type_error_occurred = True
+        except DATA_ERRORS:
             return False
 
 
@@ -317,7 +311,10 @@ class RangeRule(ValidationRule):
         self.valid_range = valid_range
 
     def apply(self) -> bool:
-        return self.apply_to in self.valid_range
+        try:
+            return self.apply_to in self.valid_range
+        except DATA_ERRORS:
+            return False
 
 
 class IntervalRule(ValidationRule):
@@ -357,8 +354,7 @@ class IntervalRule(ValidationRule):
     def apply(self) -> bool:
         try:
             return self.interval_from <= self.apply_to <= self.interval_to
-        except TypeError:
-            self._type_error_occurred = True
+        except DATA_ERRORS:
             return False
 
 
@@ -385,9 +381,6 @@ class PatternRule(ValidationRule):
     #: Default error message for the rule.
     default_error_message = 'Value does not match expected pattern.'
 
-    #: Error message used if the value that is being validated is not a string.
-    type_error_message = 'Not a string.'
-
     def __init__(self,
                  apply_to: object,
                  label: str,
@@ -400,12 +393,8 @@ class PatternRule(ValidationRule):
         self.flags = flags
 
     def apply(self) -> bool:
-        string = self.apply_to  # type: str
-        try:
-            return re.match(self.pattern, string, self.flags) is not None
-        except TypeError:
-            self._type_error_occurred = True
-            return False
+        value = self.apply_to  # type: str
+        return isinstance(value, str) and re.match(self.pattern, value, self.flags) is not None
 
 
 class PastDateRule(ValidationRule):
@@ -429,9 +418,6 @@ class PastDateRule(ValidationRule):
     #: Default error message for the rule.
     default_error_message = 'Not a past date.'
 
-    #: Error message used if the value that is being validated is not a date.
-    type_error_message = 'Not a date object.'
-
     def __init__(self,
                  apply_to: object,
                  label: str,
@@ -443,9 +429,8 @@ class PastDateRule(ValidationRule):
 
     def apply(self) -> bool:
         try:
-            return self.apply_to < self.reference_date
-        except TypeError:
-            self._type_error_occurred = True
+            return isinstance(self.apply_to, datetime) and self.apply_to < self.reference_date
+        except DATA_ERRORS:
             return False
 
 
@@ -470,9 +455,6 @@ class FutureDateRule(ValidationRule):
     #: Default error message for the rule.
     default_error_message = 'Not a future date.'
 
-    #: Error message used if the value that is being validated is not a date.
-    type_error_message = 'Not a date object.'
-
     def __init__(self,
                  apply_to: object,
                  label: str,
@@ -484,9 +466,8 @@ class FutureDateRule(ValidationRule):
 
     def apply(self) -> bool:
         try:
-            return self.apply_to > self.reference_date
-        except TypeError:
-            self._type_error_occurred = True
+            return isinstance(self.apply_to, datetime) and self.apply_to > self.reference_date
+        except DATA_ERRORS:
             return False
 
 
@@ -509,9 +490,6 @@ class UniqueItemsRule(ValidationRule):
     #: Default error message for the rule.
     default_error_message = 'List contains duplicated items.'
 
-    #: Error message used if the value that is being validated is not an iterable one.
-    type_error_message = 'Not an iterable object.'
-
     def __init__(self, apply_to: object, label: str, error_message: str = None, stop_if_invalid: bool = False):
         super().__init__(apply_to, label, error_message, stop_if_invalid)
 
@@ -527,16 +505,15 @@ class UniqueItemsRule(ValidationRule):
         return True
 
     def _collection_items_are_unique(self):
-        try:
-            # noinspection PyTypeChecker
-            return len(set(self.apply_to)) == len(self.apply_to)
-        except TypeError:
-            self._type_error_occurred = True
-            return False
+        # noinspection PyTypeChecker
+        return len(set(self.apply_to)) == len(self.apply_to)
 
     def apply(self) -> bool:
-        if isinstance(self.apply_to, dict):
-            return self._dictionary_items_are_unique()
-        if isinstance(self.apply_to, set):
-            return True
-        return self._collection_items_are_unique()
+        try:
+            if isinstance(self.apply_to, dict):
+                return self._dictionary_items_are_unique()
+            if isinstance(self.apply_to, set):
+                return True
+            return self._collection_items_are_unique()
+        except DATA_ERRORS:
+            return False

@@ -11,6 +11,8 @@ __all__ = (
     'ValidationException',
     'Validator',
     'JoinType',
+    'RuleGroup',
+    'InvalidRuleGroupException',
 )
 
 
@@ -40,9 +42,6 @@ class ValidationRule(ABC):
     #: Default error message for the rule (class attribute).
     default_error_message = 'Data is invalid.'
 
-    #: Error message used if the value that is being validated is not the expected type (TypeError exception).
-    type_error_message = 'Data type is invalid.'
-
     def __init__(self,
                  apply_to: object,
                  label: str,
@@ -52,7 +51,6 @@ class ValidationRule(ABC):
         self.label = label
         self.custom_error_message = error_message
         self.stop_if_invalid = stop_if_invalid
-        self._type_error_occurred = False
 
     @property
     def apply_to(self) -> object:
@@ -70,8 +68,6 @@ class ValidationRule(ABC):
         :return: Error message
         :rtype: str
         """
-        if self._type_error_occurred:
-            return self.type_error_message
         return self.custom_error_message or self.default_error_message
 
     @abstractmethod
@@ -94,6 +90,57 @@ class ValidationRule(ABC):
 
         self.apply = inverted_apply(self.apply)
         return self
+
+
+class InvalidRuleGroupException(Exception):
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(message)
+
+
+class RuleGroup(ValidationRule):
+    def __init__(self,
+                 apply_to: object,
+                 label: str,
+                 rules: list,
+                 error_message: str = None,
+                 stop_if_invalid: bool = False):
+        super().__init__(apply_to, label, error_message, stop_if_invalid)
+        self.rules = rules
+        self._failed_rule = None
+
+    def _get_configured_rule(self, entry):
+        rule_config = {'apply_to': self.apply_to, 'label': self.label}
+        rule_class = entry
+        if isinstance(entry, (list, tuple)):
+            if len(entry) != 2 or not issubclass(entry[0], ValidationRule) or not isinstance(entry[1], dict):
+                msg = 'Provided rule configuration does not respect the format: ' \
+                      '(rule_class: ValidationRule, rule_config: dict)'
+                raise InvalidRuleGroupException(msg)
+            rule_class = entry[0]
+            rule_config.update(entry[1])
+        elif entry is None or not issubclass(entry, ValidationRule):
+            msg = 'Expected type "ValidationRule", got "{}" instead.'.format(str(entry))
+            raise InvalidRuleGroupException(msg)
+        rule = rule_class(**rule_config)  # type: ValidationRule
+        return rule
+
+    def get_error_message(self) -> str:
+        if isinstance(self._failed_rule, ValidationRule):
+            return self._failed_rule.get_error_message()
+        return super().get_error_message()
+
+    def apply(self) -> bool:
+        for entry in self.rules:
+            rule = self._get_configured_rule(entry)
+            try:
+                if not rule.apply():
+                    self._failed_rule = rule
+                    return False
+            except Exception:
+                self._failed_rule = rule
+                return False
+        return True
 
 
 class ValidationResult:
@@ -119,18 +166,21 @@ class ValidationResult:
             self.errors[rule.label] = []
         self.errors[rule.label].append(rule.get_error_message())
 
-    def annotate_exception(self, exception: Exception) -> None:
+    def annotate_exception(self, exception: Exception, rule: ValidationRule = None) -> None:
         """
         Takes note of an exception occurred during validation.
         (Typically caused by an invalid attribute/key access inside get_rules() method)
 
         :param exception: Exception catched during validate() phase.
-        :param exception: Exception
+        :type exception: Exception
+        :param rule: Validation rule that has generated the exception.
+        :type rule: ValidationRule
         :return: None
         """
-        if self.errors.get('Exception') is None:
-            self.errors['Exception'] = []
-        self.errors['Exception'].append(str(exception))
+        error_key = rule.label if isinstance(rule, ValidationRule) else 'get_rules'
+        if self.errors.get(error_key) is None:
+            self.errors[error_key] = []
+        self.errors[error_key].append(str(exception))
 
     def is_successful(self) -> bool:
         """
@@ -212,10 +262,13 @@ class Validator(ABC):
         result = ValidationResult()
         try:
             for rule in self.get_rules():
-                if not rule.apply():
-                    result.annotate_rule_violation(rule)
-                    if rule.stop_if_invalid:
-                        break
-        except (TypeError, KeyError, NameError, ValueError, AttributeError, IndexError) as e:
-            result.annotate_exception(e)
+                try:
+                    if not rule.apply():
+                        result.annotate_rule_violation(rule)
+                        if rule.stop_if_invalid:
+                            break
+                except Exception as e:
+                    result.annotate_exception(e, rule)
+        except Exception as e:
+            result.annotate_exception(e, None)
         return result

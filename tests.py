@@ -4,7 +4,8 @@ from datetime import datetime
 from unittest import TestCase
 from unittest import main as run_tests
 
-from pyvaru import ValidationRule, Validator, ValidationResult, ValidationException
+from pyvaru import ValidationRule, Validator, ValidationResult, ValidationException, RuleGroup, \
+    InvalidRuleGroupException
 from pyvaru.rules import TypeRule, FullStringRule, ChoiceRule, MinValueRule, MaxValueRule, MinLengthRule, \
     MaxLengthRule, RangeRule, PatternRule, IntervalRule, PastDateRule, FutureDateRule, UniqueItemsRule
 
@@ -230,7 +231,7 @@ class ValidatorTest(TestCase):
         self.assertEqual(len(result.errors), 1)
         self.assertEqual(result.errors.get('Field A'), ['GtRuleFail'])
 
-    def test_validator_handle_possible_exception_in_get_rules_as_expected(self):
+    def test_validator_handle_possible_exceptions_in_get_rules_as_expected(self):
         class DangerValidator(Validator):
             def get_rules(self) -> list:
                 return [
@@ -242,10 +243,10 @@ class ValidatorTest(TestCase):
         result = validator.validate()
         self.assertFalse(result.is_successful())
         self.assertEqual(len(result.errors), 1)
-        self.assertEqual(list(result.errors.keys()), ['Exception'])
-        self.assertIsInstance(result.errors.get('Exception'), list)
-        self.assertEqual(len(result.errors.get('Exception')), 1)
-        self.assertIsInstance(result.errors.get('Exception', [])[0], str)
+        self.assertEqual(list(result.errors.keys()), ['get_rules'])
+        self.assertIsInstance(result.errors.get('get_rules'), list)
+        self.assertEqual(len(result.errors.get('get_rules')), 1)
+        self.assertIsInstance(result.errors.get('get_rules', [])[0], str)
 
         # test as context processor
         with self.assertRaises(ValidationException) as exception_context:
@@ -255,10 +256,10 @@ class ValidatorTest(TestCase):
         exception_result = exception_context.exception.validation_result
         self.assertFalse(exception_result.is_successful())
         self.assertEqual(len(exception_result.errors), 1)
-        self.assertEqual(list(exception_result.errors.keys()), ['Exception'])
-        self.assertIsInstance(exception_result.errors.get('Exception'), list)
-        self.assertEqual(len(exception_result.errors.get('Exception')), 1)
-        self.assertIsInstance(exception_result.errors.get('Exception', [])[0], str)
+        self.assertEqual(list(exception_result.errors.keys()), ['get_rules'])
+        self.assertIsInstance(exception_result.errors.get('get_rules'), list)
+        self.assertEqual(len(exception_result.errors.get('get_rules')), 1)
+        self.assertIsInstance(exception_result.errors.get('get_rules', [])[0], str)
 
     def test_without_lambdas_stop_if_invalid_does_not_prevent_errors_report(self):
         """
@@ -280,7 +281,7 @@ class ValidatorTest(TestCase):
         result = validator.validate()
         self.assertFalse(result.is_successful())
         self.assertEqual(len(result.errors), 1)
-        self.assertEqual(list(result.errors.keys()), ['Exception'])
+        self.assertEqual(list(result.errors.keys()), ['get_rules'])
 
     def test_by_using_lambda_and_stop_if_invalid_no_exception_is_reported(self):
         """
@@ -302,6 +303,37 @@ class ValidatorTest(TestCase):
         self.assertFalse(result.is_successful())
         self.assertEqual(len(result.errors), 1)
         self.assertEqual(list(result.errors.keys()), ['data'])
+
+    def test_validator_catch_and_store_errors_that_may_occour_in_rule_apply(self):
+        class RuleA(ValidationRule):
+            def apply(self):
+                raise NotImplementedError
+
+        class RuleB(ValidationRule):
+            def apply(self):
+                raise ZeroDivisionError
+
+        class MyValidator(Validator):
+            def get_rules(self):
+                return [
+                    RuleA('', 'field_a'),
+                    RuleB('', 'field_b'),
+                ]
+
+        validator = MyValidator({})
+        result = validator.validate()
+        self.assertFalse(result.is_successful())
+        self.assertEqual(len(result.errors), 2)
+        try:
+            raise NotImplementedError
+        except NotImplementedError as e:
+            expected_a = [str(e)]
+        self.assertEqual(result.errors.get('field_a'), expected_a)
+        try:
+            raise ZeroDivisionError
+        except ZeroDivisionError as e:
+            expected_b = [str(e)]
+        self.assertEqual(result.errors.get('field_b'), expected_b)
 
 
 class TypeRuleTest(TestCase):
@@ -352,6 +384,137 @@ class TypeRuleTest(TestCase):
         self.assertTrue(negated_rule_2.apply())
 
 
+class RuleGroupTest(TestCase):
+    def test_bad_configuration_of_rules_raise_exception(self):
+        group = RuleGroup(apply_to=['Italy', 'France', 'Germany'], label='Countries', rules=[None, None])
+        with self.assertRaises(InvalidRuleGroupException):
+            group.apply()
+
+        group = RuleGroup(apply_to=['Italy', 'France', 'Germany'], label='Countries', rules=[(TypeRule, 1)])
+        with self.assertRaises(InvalidRuleGroupException):
+            group.apply()
+
+        group = RuleGroup(apply_to=['Italy', 'France', 'Germany'], label='Countries', rules=[[TypeRule]])
+        with self.assertRaises(InvalidRuleGroupException):
+            group.apply()
+
+    def test_group_returns_true_if_respected(self):
+        rules = [
+            (TypeRule, {'valid_type': list}),
+            (MinLengthRule, {'min_length': 1}),
+            UniqueItemsRule
+        ]
+        group = RuleGroup(apply_to=['Italy', 'France', 'Germany'], label='Countries', rules=rules)
+        self.assertTrue(group.apply())
+
+    def test_group_supports_lambda_expressions(self):
+        rules = [
+            (TypeRule, {'valid_type': list}),
+            (MinLengthRule, {'min_length': 1}),
+            UniqueItemsRule
+        ]
+        group = RuleGroup(lambda: ['Italy', 'France', 'Germany'], label='Countries', rules=rules)
+        self.assertTrue(group.apply())
+
+    def test_group_returns_false_if_not_respected(self):
+        rules = [
+            (TypeRule, {'valid_type': list}),
+            (MinLengthRule, {'min_length': 2}),
+            UniqueItemsRule
+        ]
+
+        # TypeRule test
+        group_1 = RuleGroup(apply_to='foo', label='Countries', rules=rules)
+        self.assertFalse(group_1.apply())
+
+        # MinLengthRule test
+        group_2 = RuleGroup(apply_to=['USA'], label='Countries', rules=rules)
+        self.assertFalse(group_2.apply())
+
+        # UniqueItemsRule test
+        group_3 = RuleGroup(apply_to=['USA', 'Italy', 'USA'], label='Countries', rules=rules)
+        self.assertFalse(group_3.apply())
+
+    def test_group_returns_false_if_given_type_is_wrong(self):
+        class MyObject:
+            pass
+
+        rules = [
+            (MinLengthRule, {'min_length': 2}),
+            UniqueItemsRule
+        ]
+        group = RuleGroup(lambda: MyObject(), label='Countries', rules=rules)
+        self.assertFalse(group.apply())
+
+    def test_default_message_is_used_if_no_custom_provided(self):
+        rules = [
+            (TypeRule, {'valid_type': list}),
+            (MinLengthRule, {'min_length': 2}),
+            UniqueItemsRule
+        ]
+
+        # TypeRule test
+        group_1 = RuleGroup(apply_to='foo', label='Countries', rules=rules)
+        group_1.apply()
+        self.assertEqual(group_1.get_error_message(), TypeRule.default_error_message)
+
+        # MinLengthRule test
+        group_2 = RuleGroup(apply_to=['USA'], label='Countries', rules=rules)
+        group_2.apply()
+        self.assertEqual(group_2.get_error_message(), MinLengthRule.default_error_message)
+
+        # UniqueItemsRule test
+        group_3 = RuleGroup(apply_to=['USA', 'Italy', 'USA'], label='Countries', rules=rules)
+        group_3.apply()
+        self.assertEqual(group_3.get_error_message(), UniqueItemsRule.default_error_message)
+
+    def test_custom_message_used_if_provided(self):
+        rules = [
+            (TypeRule, {'valid_type': list, 'error_message': 'Custom TypeRule message'}),
+            (MinLengthRule, {'min_length': 2, 'error_message': 'Custom MinLengthRule message'}),
+            (UniqueItemsRule, {'error_message': 'Custom UniqueItemsRule message'})
+        ]
+
+        # TypeRule test
+        group_1 = RuleGroup(apply_to='foo', label='Countries', rules=rules)
+        group_1.apply()
+        self.assertEqual(group_1.get_error_message(), 'Custom TypeRule message')
+
+        # MinLengthRule test
+        group_2 = RuleGroup(apply_to=['USA'], label='Countries', rules=rules)
+        group_2.apply()
+        self.assertEqual(group_2.get_error_message(), 'Custom MinLengthRule message')
+
+        # UniqueItemsRule test
+        group_3 = RuleGroup(apply_to=['USA', 'Italy', 'USA'], label='Countries', rules=rules)
+        group_3.apply()
+        self.assertEqual(group_3.get_error_message(), 'Custom UniqueItemsRule message')
+
+    # bitwise operators
+
+    def test_group_can_be_negated_with_bitwise_inversion(self):
+        rules = [
+            (TypeRule, {'valid_type': list}),
+            (MinLengthRule, {'min_length': 2}),
+            UniqueItemsRule
+        ]
+
+        # TypeRule test
+        group_1 = ~ RuleGroup(apply_to='foo', label='Countries', rules=rules)
+        self.assertTrue(group_1.apply())
+
+        # MinLengthRule test
+        group_2 = ~ RuleGroup(apply_to=['USA'], label='Countries', rules=rules)
+        self.assertTrue(group_2.apply())
+
+        # UniqueItemsRule test
+        group_3 = ~ RuleGroup(apply_to=['USA', 'Italy', 'USA'], label='Countries', rules=rules)
+        self.assertTrue(group_3.apply())
+
+        group_4 = ~ RuleGroup(apply_to=['USA', 'Italy', 'Germany'], label='Countries', rules=rules)
+        self.assertFalse(group_4.apply())
+
+
 class FullStringRuleTest(TestCase):
     def test_rule_returns_true_if_respected(self):
         self.assertTrue(FullStringRule('ciao', 'label').apply())
@@ -367,11 +530,6 @@ class FullStringRuleTest(TestCase):
         self.assertFalse(FullStringRule(None, 'label').apply())
         self.assertFalse(FullStringRule([1, 2, 3], 'label').apply())
         self.assertFalse(FullStringRule(datetime.now(), 'label').apply())
-
-    def test_rule_changes_error_message_if_given_type_is_wrong(self):
-        rule = FullStringRule([1, 2, 3], 'label')
-        rule.apply()
-        self.assertEqual(rule.get_error_message(), FullStringRule.type_error_message)
 
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = FullStringRule('ciao', 'label')
@@ -443,11 +601,6 @@ class MinValueRuleTest(TestCase):
         self.assertFalse(MinValueRule({'a': 0}, 'label', min_value=50).apply())
         self.assertFalse(MinValueRule([1, 2, 3], 'label', min_value=50).apply())
 
-    def test_rule_changes_error_message_if_the_given_type_is_wrong(self):
-        rule = MinValueRule([1, 2, 3], 'label', min_value=50)
-        rule.apply()
-        self.assertEqual(rule.get_error_message(), MinValueRule.type_error_message)
-
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = MinValueRule(100, 'label', min_value=50)
         self.assertEqual(rule.get_error_message(), MinValueRule.default_error_message)
@@ -486,11 +639,6 @@ class MaxValueRuleTest(TestCase):
         self.assertFalse(MaxValueRule('hello', 'label', max_value=50).apply())
         self.assertFalse(MaxValueRule([1, 2, 3], 'label', max_value=50).apply())
         self.assertFalse(MaxValueRule({'a': 'b'}, 'label', max_value=50).apply())
-
-    def test_rule_changes_error_message_if_the_given_type_is_wrong(self):
-        rule = MaxValueRule({'a': 'b'}, 'label', max_value=50)
-        rule.apply()
-        self.assertEqual(rule.get_error_message(), MaxValueRule.type_error_message)
 
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = MaxValueRule(10, 'label', max_value=50)
@@ -538,11 +686,6 @@ class MinLengthRuleTest(TestCase):
         self.assertFalse(MinLengthRule(5, 'label', min_length=10).apply())
         self.assertFalse(MinLengthRule(datetime.now(), 'label', min_length=10).apply())
 
-    def test_rule_changes_error_message_if_the_given_type_is_wrong(self):
-        rule = MinLengthRule(5, 'label', min_length=10)
-        rule.apply()
-        self.assertEqual(rule.get_error_message(), MinLengthRule.type_error_message)
-
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = MinLengthRule('hello', 'label', min_length=10)
         self.assertEqual(rule.get_error_message(), MinLengthRule.default_error_message)
@@ -588,11 +731,6 @@ class MaxLengthRuleTest(TestCase):
     def test_rules_returns_false_if_the_given_type_is_wrong(self):
         self.assertFalse(MaxLengthRule(8, 'label', max_length=2).apply())
         self.assertFalse(MaxLengthRule(datetime.now(), 'label', max_length=2).apply())
-
-    def test_rule_changes_error_message_if_the_given_type_is_wrong(self):
-        rule = MaxLengthRule(8, 'label', max_length=2)
-        rule.apply()
-        self.assertEqual(rule.get_error_message(), MaxLengthRule.type_error_message)
 
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = MaxLengthRule('abc', 'label', max_length=3)
@@ -682,11 +820,6 @@ class IntervalRuleTest(TestCase):
         self.assertFalse(IntervalRule(datetime.now(), interval_from=10, interval_to=50, label='label').apply())
         self.assertFalse(IntervalRule({'a': 123}, interval_from=10, interval_to=50, label='label').apply())
 
-    def test_rule_changes_error_message_if_the_given_type_is_wrong(self):
-        rule = IntervalRule({'a': 123}, interval_from=10, interval_to=50, label='label')
-        rule.apply()
-        self.assertEqual(rule.get_error_message(), IntervalRule.type_error_message)
-
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = IntervalRule(9, interval_from=10, interval_to=50, label='label')
         self.assertEqual(rule.get_error_message(), IntervalRule.default_error_message)
@@ -723,12 +856,6 @@ class PatternRuleTest(TestCase):
     def test_rule_returns_false_if_given_type_is_wrong(self):
         self.assertFalse(PatternRule(42, 'label', pattern=r'^[a-z]+$').apply())
         self.assertFalse(PatternRule([1, 2, 3], 'label', pattern=r'^[a-z]+$').apply())
-        self.assertFalse(PatternRule(datetime.now(), 'label', pattern=r'^[a-z]+$').apply())
-
-    def test_rule_changes_error_message_if_given_type_is_wrong(self):
-        rule = PatternRule([1, 2, 3], 'label', pattern=r'^[a-z]+$')
-        rule.apply()
-        self.assertEqual(rule.get_error_message(), PatternRule.type_error_message)
 
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = PatternRule('hello', 'label', pattern=r'[a-z]+')
@@ -764,11 +891,6 @@ class PastDateRuleTest(TestCase):
 
     def test_rule_returns_false_if_given_type_is_wrong(self):
         self.assertFalse(PastDateRule('nope!', 'date', reference_date=datetime(2020, 1, 1)).apply())
-
-    def test_rule_changes_error_message_if_given_type_is_wrong(self):
-        rule = PastDateRule('nope!', 'date', reference_date=datetime(2020, 1, 1))
-        rule.apply()
-        self.assertEqual(rule.get_error_message(), PastDateRule.type_error_message)
 
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = PastDateRule(datetime(2015, 1, 1), 'date', reference_date=datetime(2020, 1, 1))
@@ -806,11 +928,6 @@ class FutureDateRuleTest(TestCase):
 
     def test_rule_returns_false_if_given_type_is_wrong(self):
         self.assertFalse(FutureDateRule('nope!', 'date', reference_date=datetime(2020, 1, 1)).apply())
-
-    def test_rule_changes_error_message_if_given_type_is_wrong(self):
-        rule = FutureDateRule('nope!', 'date', reference_date=datetime(2020, 1, 1))
-        rule.apply()
-        self.assertEqual(rule.get_error_message(), FutureDateRule.type_error_message)
 
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = FutureDateRule(datetime(2015, 1, 1), 'date', reference_date=datetime(2020, 1, 1))
@@ -895,11 +1012,6 @@ class UniqueItemsRuleTest(TestCase):
         self.assertFalse(UniqueItemsRule(42, 'list').apply())
         self.assertFalse(UniqueItemsRule(True, 'list').apply())
         self.assertFalse(UniqueItemsRule(datetime.now(), 'list').apply())
-
-    def test_rule_changes_error_message_if_given_type_is_wrong(self):
-        rule = UniqueItemsRule(42, 'list')
-        rule.apply()
-        self.assertEqual(rule.get_error_message(), UniqueItemsRule.type_error_message)
 
     def test_default_message_is_used_if_no_custom_provided(self):
         rule = UniqueItemsRule(['one', 'two', 'three'], 'list')
