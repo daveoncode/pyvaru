@@ -45,7 +45,7 @@ and implementing the logic in the ``apply()`` method. For example:
 These rules are then executed by a ``Validator``, which basically executes them in the provided
 order and eventually returns a ``ValidationResult`` containing the validation response.
 
-Is also possible to create groups of rules by using ``RuleGroup`` and avoid code duplication if multiple rules should
+It's also possible to create groups of rules by using ``RuleGroup`` and avoid code duplication if multiple rules should
 be applied to the same field. So this code:
 
 .. code-block:: python
