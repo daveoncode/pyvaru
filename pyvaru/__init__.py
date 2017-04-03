@@ -4,7 +4,7 @@ from enum import Enum
 
 from inspect import isfunction
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 __all__ = (
     'ValidationRule',
     'ValidationResult',
@@ -93,12 +93,33 @@ class ValidationRule(ABC):
 
 
 class InvalidRuleGroupException(Exception):
+    """
+    Exception raised by RuleGroup if the provided configuration is invalid.
+    """
     def __init__(self, message: str):
         self.message = message
         super().__init__(message)
 
 
 class RuleGroup(ValidationRule):
+    """
+    Allows the execution of multiple rules sequentially.
+
+    :param apply_to: Value against which the rule is applied (can be any type).
+    :type apply_to: object
+    :param label: Short string describing the field that will be validated (e.g. "phone number", "user name"...). \
+    This string will be used as the key in the ValidationResult error dictionary.
+    :type label: str
+    :param rules: List of rules to execute. The list can contain rule type (ie: FullStringRule, MinValueRule...) or 
+    tuples in the format: "(RuleClass, options)" (ie: "(MinLengthRule, {'min_length': 1})")
+    :type rules: list
+    :param error_message: Custom message that will be used instead of the "default_error_message".
+    :type error_message: str
+    :param stop_if_invalid: True to prevent Validator from processing the rest of the get_rules if the current one \
+    is not respected, False (default) to collect all the possible errors.
+    :type stop_if_invalid: bool
+    """
+
     def __init__(self,
                  apply_to: object,
                  label: str,

@@ -5,7 +5,7 @@ with open('README.rst', 'r') as readme:
 
 setup(
     name='pyvaru',
-    version='0.2.0',
+    version='0.3.0',
     description='Rule based data validation library for python.',
     long_description=long_description,
     author='Davide Zanotti',

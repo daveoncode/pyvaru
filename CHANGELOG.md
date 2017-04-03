@@ -1,5 +1,17 @@
 # Pyvaru Changelog
 
+## v0.3.0
+
+### Added:
+
+- RuleGroup (which allows the sequential execution of multiple rules)
+- [experimental] Bitwise rule negation using "~" (which inverts the rule validation logic)
+
+### Improvements:
+
+- ValidationResult and ValidationException now implement __str__ in order to provide a meaningful representation
+- Improved and simplified error handling in apply() method
+
 ## v0.2.0
 
 ### Improvements:

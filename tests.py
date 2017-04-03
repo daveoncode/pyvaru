@@ -407,6 +407,15 @@ class RuleGroupTest(TestCase):
         group = RuleGroup(apply_to=['Italy', 'France', 'Germany'], label='Countries', rules=rules)
         self.assertTrue(group.apply())
 
+    def test_group_catch_rules_exception(self):
+        class BadRule(ValidationRule):
+            def apply(self) -> bool:
+                raise FileNotFoundError
+
+        rules = [BadRule]
+        group = RuleGroup(apply_to=['Italy', 'France', 'Germany'], label='Countries', rules=rules)
+        self.assertFalse(group.apply())
+
     def test_group_supports_lambda_expressions(self):
         rules = [
             (TypeRule, {'valid_type': list}),
@@ -489,6 +498,16 @@ class RuleGroupTest(TestCase):
         group_3 = RuleGroup(apply_to=['USA', 'Italy', 'USA'], label='Countries', rules=rules)
         group_3.apply()
         self.assertEqual(group_3.get_error_message(), 'Custom UniqueItemsRule message')
+
+    def test_error_message_fallback_if_no_failed_rule(self):
+        rules = [
+            (TypeRule, {'valid_type': list}),
+            (MinLengthRule, {'min_length': 1}),
+            UniqueItemsRule
+        ]
+        group = RuleGroup(apply_to=['Italy', 'France', 'Germany'], label='Countries', rules=rules)
+        self.assertTrue(group.apply())
+        self.assertEqual(group.get_error_message(), RuleGroup.default_error_message)
 
     # bitwise operators
 
@@ -573,6 +592,9 @@ class ChoiceRuleTest(TestCase):
     def test_custom_message_used_if_provided(self):
         rule = ChoiceRule('B', 'label', choices=('A', 'B', 'C'), error_message=CUSTOM_MESSAGE)
         self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
+
+    def test_rule_catches_exception_in_apply(self):
+        self.assertFalse(ChoiceRule('x', 'label', choices=False).apply())
 
     # bitwise operators
 
@@ -791,6 +813,9 @@ class RangeRuleTest(TestCase):
         rule = RangeRule(20, 'label', valid_range=range(10, 100), error_message=msg)
         self.assertEqual(rule.get_error_message(), msg)
 
+    def test_rule_catches_exception_in_apply(self):
+        self.assertFalse(RangeRule(11.5, 'label', valid_range=False).apply())
+
     # bitwise operators
 
     def test_rule_can_be_negated_with_bitwise_inversion(self):
@@ -903,6 +928,9 @@ class PastDateRuleTest(TestCase):
                             error_message=CUSTOM_MESSAGE)
         self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
 
+    def test_rule_catches_exceptions_in_apply(self):
+        self.assertFalse(PastDateRule(datetime(2022, 1, 1), 'date', reference_date=True).apply())
+
     # bitwise operators
 
     def test_rule_can_be_negated_with_bitwise_inversion(self):
@@ -939,6 +967,9 @@ class FutureDateRuleTest(TestCase):
                               reference_date=datetime(2020, 1, 1),
                               error_message=CUSTOM_MESSAGE)
         self.assertEqual(rule.get_error_message(), CUSTOM_MESSAGE)
+
+    def test_rule_catches_exceptions_in_apply(self):
+        self.assertFalse(FutureDateRule(datetime(2022, 1, 1), 'date', reference_date=True).apply())
 
     # bitwise operators
 
