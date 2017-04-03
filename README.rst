@@ -45,32 +45,6 @@ and implementing the logic in the ``apply()`` method. For example:
 These rules are then executed by a ``Validator``, which basically executes them in the provided
 order and eventually returns a ``ValidationResult`` containing the validation response.
 
-It's also possible to create groups of rules by using ``RuleGroup`` and avoid code duplication if multiple rules should
-be applied to the same field. So this code:
-
-.. code-block:: python
-
-    def get_rules(self) -> list:
-        return [
-            TypeRule(lambda: self.data.countries, 'Countries', valid_type=list),
-            MinLengthRule(lambda: self.data.countries, 'Countries', min_length=1),
-            UniqueItemsRule(lambda: self.data.countries, 'Countries')
-        ]
-
-
-can be replaced by:
-
-.. code-block:: python
-
-    def get_rules(self) -> list:
-        return [
-            RuleGroup(lambda: self.data.countries,
-                      'Countries',
-                      rules=[(TypeRule, {'valid_type': list}),
-                             (MinLengthRule, {'min_length': 1}),
-                             UniqueItemsRule])
-        ]
-
 
 Installation
 ------------
@@ -117,6 +91,34 @@ validate we have to provide one or more proper rule(s).
                 ChoiceRule(lambda: user.sex, 'Sex', choices=('M', 'F')),
                 PastDateRule(lambda: user.date_of_birth, 'Date of birth')
             ]
+
+
+It's also possible to create groups of rules by using ``RuleGroup`` and avoid code duplication if multiple rules should
+be applied to the same field. So this code:
+
+.. code-block:: python
+
+    def get_rules(self) -> list:
+        return [
+            TypeRule(lambda: self.data.countries, 'Countries', valid_type=list),
+            MinLengthRule(lambda: self.data.countries, 'Countries', min_length=1),
+            UniqueItemsRule(lambda: self.data.countries, 'Countries')
+        ]
+
+
+can be replaced by:
+
+.. code-block:: python
+
+    def get_rules(self) -> list:
+        return [
+            RuleGroup(lambda: self.data.countries,
+                      'Countries',
+                      rules=[(TypeRule, {'valid_type': list}),
+                             (MinLengthRule, {'min_length': 1}),
+                             UniqueItemsRule])
+        ]
+
 
 Finally we have two choices regarding how to use our custom validator:
     

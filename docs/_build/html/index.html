@@ -200,27 +200,6 @@ and implementing the logic in the <code class="docutils literal"><span class="pr
 </div>
 <p>These rules are then executed by a <code class="docutils literal"><span class="pre">Validator</span></code>, which basically executes them in the provided
 order and eventually returns a <code class="docutils literal"><span class="pre">ValidationResult</span></code> containing the validation response.</p>
-<p>Is also possible to create groups of rules by using <code class="docutils literal"><span class="pre">RuleGroup</span></code> and avoid code duplication if multiple rules should
-be applied to the same field. So this code:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-    <span class="k">return</span> <span class="p">[</span>
-        <span class="n">TypeRule</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">countries</span><span class="p">,</span> <span class="s1">&#39;Countries&#39;</span><span class="p">,</span> <span class="n">valid_type</span><span class="o">=</span><span class="nb">list</span><span class="p">),</span>
-        <span class="n">MinLengthRule</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">countries</span><span class="p">,</span> <span class="s1">&#39;Countries&#39;</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-        <span class="n">UniqueItemsRule</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">countries</span><span class="p">,</span> <span class="s1">&#39;Countries&#39;</span><span class="p">)</span>
-    <span class="p">]</span>
-</pre></div>
-</div>
-<p>can be replaced by:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-    <span class="k">return</span> <span class="p">[</span>
-        <span class="n">RuleGroup</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">countries</span><span class="p">,</span>
-                  <span class="s1">&#39;Countries&#39;</span><span class="p">,</span>
-                  <span class="n">rules</span><span class="o">=</span><span class="p">[(</span><span class="n">TypeRule</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;valid_type&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">}),</span>
-                         <span class="p">(</span><span class="n">MinLengthRule</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;min_length&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}),</span>
-                         <span class="n">UniqueItemsRule</span><span class="p">])</span>
-    <span class="p">]</span>
-</pre></div>
-</div>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
@@ -258,6 +237,27 @@ validate we have to provide one or more proper rule(s).</p>
             <span class="n">ChoiceRule</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">sex</span><span class="p">,</span> <span class="s1">&#39;Sex&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">)),</span>
             <span class="n">PastDateRule</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">date_of_birth</span><span class="p">,</span> <span class="s1">&#39;Date of birth&#39;</span><span class="p">)</span>
         <span class="p">]</span>
+</pre></div>
+</div>
+<p>It&#8217;s also possible to create groups of rules by using <code class="docutils literal"><span class="pre">RuleGroup</span></code> and avoid code duplication if multiple rules should
+be applied to the same field. So this code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">TypeRule</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">countries</span><span class="p">,</span> <span class="s1">&#39;Countries&#39;</span><span class="p">,</span> <span class="n">valid_type</span><span class="o">=</span><span class="nb">list</span><span class="p">),</span>
+        <span class="n">MinLengthRule</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">countries</span><span class="p">,</span> <span class="s1">&#39;Countries&#39;</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">UniqueItemsRule</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">countries</span><span class="p">,</span> <span class="s1">&#39;Countries&#39;</span><span class="p">)</span>
+    <span class="p">]</span>
+</pre></div>
+</div>
+<p>can be replaced by:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">RuleGroup</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">countries</span><span class="p">,</span>
+                  <span class="s1">&#39;Countries&#39;</span><span class="p">,</span>
+                  <span class="n">rules</span><span class="o">=</span><span class="p">[(</span><span class="n">TypeRule</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;valid_type&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">}),</span>
+                         <span class="p">(</span><span class="n">MinLengthRule</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;min_length&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}),</span>
+                         <span class="n">UniqueItemsRule</span><span class="p">])</span>
+    <span class="p">]</span>
 </pre></div>
 </div>
 <p>Finally we have two choices regarding how to use our custom validator:</p>
