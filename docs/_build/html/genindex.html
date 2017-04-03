@@ -9,9 +9,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; pyvaru 0.2.0 documentation</title>
+  <title>Index &mdash; pyvaru 0.3.0 documentation</title>
   
 
+  
+  
   
   
 
@@ -34,7 +36,7 @@
         <link rel="index" title="Index"
               href="#"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="pyvaru 0.2.0 documentation" href="index.html"/> 
+    <link rel="top" title="pyvaru 0.3.0 documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -43,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -62,7 +65,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3.0
               </div>
             
           
@@ -83,8 +86,11 @@
           
             
             
-                <!-- Local TOC -->
-                <div class="local-toc"></div>
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
             
           
         </div>
@@ -95,8 +101,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">pyvaru</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyvaru</a>
+        
       </nav>
 
 
@@ -109,17 +117,34 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Index</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Index</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -135,6 +160,7 @@
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
@@ -147,6 +173,12 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="contents.html#pyvaru.ValidationResult.annotate_exception">annotate_exception() (pyvaru.ValidationResult method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="contents.html#pyvaru.ValidationResult.annotate_rule_violation">annotate_rule_violation() (pyvaru.ValidationResult method)</a>
+</li>
       <li><a href="contents.html#pyvaru.ValidationRule.apply">apply() (pyvaru.ValidationRule method)</a>
 </li>
   </ul></td>
@@ -255,7 +287,17 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="contents.html#pyvaru.InvalidRuleGroupException">InvalidRuleGroupException</a>
+</li>
       <li><a href="contents.html#pyvaru.ValidationResult.is_successful">is_successful() (pyvaru.ValidationResult method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="contents.html#pyvaru.JoinType">JoinType (class in pyvaru)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -298,26 +340,14 @@
       <li><a href="contents.html#pyvaru.rules.RangeRule">RangeRule (class in pyvaru.rules)</a>
 </li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="contents.html#pyvaru.RuleGroup">RuleGroup (class in pyvaru)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="contents.html#pyvaru.rules.FullStringRule.type_error_message">type_error_message (pyvaru.rules.FullStringRule attribute)</a>
-
-      <ul>
-        <li><a href="contents.html#pyvaru.ValidationRule.type_error_message">(pyvaru.ValidationRule attribute)</a>
-</li>
-        <li><a href="contents.html#pyvaru.rules.FutureDateRule.type_error_message">(pyvaru.rules.FutureDateRule attribute)</a>
-</li>
-        <li><a href="contents.html#pyvaru.rules.PastDateRule.type_error_message">(pyvaru.rules.PastDateRule attribute)</a>
-</li>
-        <li><a href="contents.html#pyvaru.rules.PatternRule.type_error_message">(pyvaru.rules.PatternRule attribute)</a>
-</li>
-        <li><a href="contents.html#pyvaru.rules.UniqueItemsRule.type_error_message">(pyvaru.rules.UniqueItemsRule attribute)</a>
-</li>
-      </ul></li>
-  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="contents.html#pyvaru.rules.TypeRule">TypeRule (class in pyvaru.rules)</a>
 </li>
@@ -353,13 +383,20 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="contents.html#pyvaru.ValidationException.with_traceback">with_traceback() (pyvaru.ValidationException method)</a>
+      <li><a href="contents.html#pyvaru.InvalidRuleGroupException.with_traceback">with_traceback() (pyvaru.InvalidRuleGroupException method)</a>
+
+      <ul>
+        <li><a href="contents.html#pyvaru.ValidationException.with_traceback">(pyvaru.ValidationException method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 
 
+           </div>
+           <div class="articleComments">
+            
            </div>
           </div>
           <footer>
@@ -391,10 +428,11 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.0',
+            VERSION:'0.3.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

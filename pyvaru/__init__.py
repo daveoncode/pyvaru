@@ -104,13 +104,22 @@ class InvalidRuleGroupException(Exception):
 class RuleGroup(ValidationRule):
     """
     Allows the execution of multiple rules sequentially.
+    
+    :Example:
+        
+    >>> rules = [
+    >>>    (TypeRule, {'valid_type': list}),
+    >>>    (MinLengthRule, {'min_length': 1}),
+    >>>    UniqueItemsRule
+    >>> ]
+    >>> group = RuleGroup(apply_to=countries, label='Countries', rules=rules)
 
     :param apply_to: Value against which the rule is applied (can be any type).
     :type apply_to: object
     :param label: Short string describing the field that will be validated (e.g. "phone number", "user name"...). \
     This string will be used as the key in the ValidationResult error dictionary.
     :type label: str
-    :param rules: List of rules to execute. The list can contain rule type (ie: FullStringRule, MinValueRule...) or 
+    :param rules: List of rules to execute. The list can contain rule type (ie: FullStringRule, MinValueRule...) or \
     tuples in the format: "(RuleClass, options)" (ie: "(MinLengthRule, {'min_length': 1})")
     :type rules: list
     :param error_message: Custom message that will be used instead of the "default_error_message".

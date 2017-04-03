@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pyvaru documentation &mdash; pyvaru 0.2.0 documentation</title>
+  <title>Pyvaru documentation &mdash; pyvaru 0.3.0 documentation</title>
   
 
+  
+  
   
   
 
@@ -33,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="pyvaru 0.2.0 documentation" href="#"/> 
+    <link rel="top" title="pyvaru 0.3.0 documentation" href="#"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -42,6 +44,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -61,7 +64,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3.0
               </div>
             
           
@@ -82,8 +85,11 @@
           
             
             
-                <!-- Local TOC -->
-                <div class="local-toc"><ul>
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
 <li><a class="reference internal" href="#">Pyvaru documentation</a><ul>
 <li><a class="reference internal" href="#what-is-pyvaru">What is pyvaru?</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
@@ -105,8 +111,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="#">pyvaru</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">pyvaru</a>
+        
       </nav>
 
 
@@ -115,23 +123,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="#">Docs</a> &raquo;</li>
-      
-    <li>Pyvaru documentation</li>
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Pyvaru documentation</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -175,6 +200,27 @@ and implementing the logic in the <code class="docutils literal"><span class="pr
 </div>
 <p>These rules are then executed by a <code class="docutils literal"><span class="pre">Validator</span></code>, which basically executes them in the provided
 order and eventually returns a <code class="docutils literal"><span class="pre">ValidationResult</span></code> containing the validation response.</p>
+<p>Is also possible to create groups of rules by using <code class="docutils literal"><span class="pre">RuleGroup</span></code> and avoid code duplication if multiple rules should
+be applied to the same field. So this code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">TypeRule</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">countries</span><span class="p">,</span> <span class="s1">&#39;Countries&#39;</span><span class="p">,</span> <span class="n">valid_type</span><span class="o">=</span><span class="nb">list</span><span class="p">),</span>
+        <span class="n">MinLengthRule</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">countries</span><span class="p">,</span> <span class="s1">&#39;Countries&#39;</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">UniqueItemsRule</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">countries</span><span class="p">,</span> <span class="s1">&#39;Countries&#39;</span><span class="p">)</span>
+    <span class="p">]</span>
+</pre></div>
+</div>
+<p>can be replaced by:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">RuleGroup</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">countries</span><span class="p">,</span>
+                  <span class="s1">&#39;Countries&#39;</span><span class="p">,</span>
+                  <span class="n">rules</span><span class="o">=</span><span class="p">[(</span><span class="n">TypeRule</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;valid_type&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">}),</span>
+                         <span class="p">(</span><span class="n">MinLengthRule</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;min_length&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}),</span>
+                         <span class="n">UniqueItemsRule</span><span class="p">])</span>
+    <span class="p">]</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
@@ -275,6 +321,9 @@ validate we have to provide one or more proper rule(s).</p>
 
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -305,10 +354,11 @@ validate we have to provide one or more proper rule(s).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.0',
+            VERSION:'0.3.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>
